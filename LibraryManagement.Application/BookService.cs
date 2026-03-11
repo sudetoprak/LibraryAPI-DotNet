@@ -14,26 +14,29 @@ public class BookService : IBookService
         _context = context;
     }
 
+    // 1. Tüm Kitapları Getir (Soft Delete olanlar hariç)
     public async Task<List<BookDto>> GetAllBooksAsync()
     {
-        // Sadece silinmemiş kitapları ve ID bilgisini içeren DTO'ları döner
         return await _context.Books
-            .Where(b => !b.IsDeleted) 
+            .Where(b => !b.IsDeleted)
             .Select(b => new BookDto
             {
                 Id = b.Id,
                 Title = b.Title,
                 Author = b.Author,
+                ISBN = b.ISBN, 
                 StockCount = b.StockCount
             }).ToListAsync();
     }
 
+    // 2. Yeni Kitap Ekle
     public async Task<BookDto> AddBookAsync(BookCreateDto dto)
     {
         var book = new Book
         {
             Title = dto.Title,
             Author = dto.Author,
+            ISBN = dto.ISBN, 
             StockCount = dto.StockCount,
             IsDeleted = false
         };
@@ -46,17 +49,35 @@ public class BookService : IBookService
             Id = book.Id,
             Title = book.Title,
             Author = book.Author,
+            ISBN = book.ISBN,
             StockCount = book.StockCount
         };
     }
 
+    public async Task<bool> UpdateBookAsync(int id, BookCreateDto dto)
+    {
+        var book = await _context.Books.FindAsync(id);
+
+        if (book == null || book.IsDeleted)
+            return false;
+
+        book.Title = dto.Title;
+        book.Author = dto.Author;
+        book.ISBN = dto.ISBN;
+        book.StockCount = dto.StockCount;
+
+        _context.Books.Update(book);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    // 4. Kitap Sil (Soft Delete)
     public async Task<bool> DeleteBookAsync(int id)
     {
         var book = await _context.Books.FindAsync(id);
         if (book == null) return false;
 
-        // Hocanın istediği gerçek Soft Delete uygulaması
-        book.IsDeleted = true; 
+        book.IsDeleted = true;
         _context.Books.Update(book);
         await _context.SaveChangesAsync();
         return true;

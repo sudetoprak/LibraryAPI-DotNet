@@ -11,8 +11,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddScoped<IRentalService, RentalService>();
-builder.Services.AddScoped<IBookService, BookService>(); // BookService için de Interface eklendi
-
+builder.Services.AddScoped<IBookService, BookService>(); 
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
