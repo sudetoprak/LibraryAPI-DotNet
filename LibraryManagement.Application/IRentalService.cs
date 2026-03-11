@@ -10,5 +10,6 @@ namespace LibraryManagement.Application
     {
         Task<string> RentBookAsync(int userId, int bookId);
         Task<string> ReturnBookAsync(int rentalId);
+        Task<IEnumerable<object>> GetAllRentalsAsync(); 
     }
 }

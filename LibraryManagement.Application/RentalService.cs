@@ -1,4 +1,4 @@
-﻿using LbraryMangement.Infrastructure.Context;
+﻿using LibraryManagement.Infrastructure.Context; 
 using LibraryManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,6 @@ public class RentalService : IRentalService
         _context = context;
     }
 
-    
     public async Task<string> RentBookAsync(int userId, int bookId)
     {
         var book = await _context.Books.FindAsync(bookId);
@@ -25,7 +24,8 @@ public class RentalService : IRentalService
         {
             BookId = bookId,
             UserId = userId,
-            RentalDate = DateTime.Now
+            RentalDate = DateTime.Now,
+            IsDeleted = false 
         };
 
         book.StockCount--;
@@ -36,7 +36,6 @@ public class RentalService : IRentalService
         return "Kitap başarıyla kiralandı. Kalan stok: " + book.StockCount;
     }
 
-    
     public async Task<string> ReturnBookAsync(int rentalId)
     {
         var rental = await _context.Rentals
@@ -50,9 +49,29 @@ public class RentalService : IRentalService
             rental.Book.StockCount++;
         }
 
-        _context.Rentals.Remove(rental);
+       
+        rental.IsDeleted = true;
+        _context.Rentals.Update(rental);
+
         await _context.SaveChangesAsync();
 
         return $"Kitap iade edildi. Güncel stok: {rental.Book?.StockCount}";
+    }
+
+    public async Task<IEnumerable<object>> GetAllRentalsAsync()
+    {
+        return await _context.Rentals
+            .Include(r => r.User)
+            .Include(r => r.Book)
+            .Select(r => new
+            {
+                r.Id,
+                r.RentalDate,
+                UserName = r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
+                r.BookId,
+                r.UserId
+            })
+            .ToListAsync();
     }
 }

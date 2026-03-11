@@ -1,17 +1,17 @@
-using LbraryMangement.Infrastructure.Context;
+using LibraryManagement.Infrastructure.Context; 
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Api.Middlewares;
 using LibraryManagement.Application;
-
+using LibraryManagement.Application;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-//  Kiralama Servis Kaydý  
+
 builder.Services.AddScoped<IRentalService, RentalService>();
-builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<IBookService, BookService>(); // BookService için de Interface eklendi
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +24,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
 app.UseHttpsRedirection();

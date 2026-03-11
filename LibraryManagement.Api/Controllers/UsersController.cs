@@ -1,8 +1,6 @@
-﻿using LibraryManagement.Infrastructure.Context;
-using LibraryManagement.Domain.Entities; // Harf hatası DÜZELTİLDİ
+﻿using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application; 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LibraryManagement.Application; // Service katmanı için
 
 namespace LibraryManagement.Api.Controllers
 {
@@ -10,29 +8,25 @@ namespace LibraryManagement.Api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        // NOT: İlerleyen aşamada burayı da IUserService'e çevirebilirsin (Hocan istediği için)
-        private readonly AppDbContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(AppDbContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            // İPUCU: Burada normalde User listesini değil, UserDto listesi dönmelisin
-            return await _context.Users.ToListAsync();
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<UserDto>> PostUser(UserCreateDto userDto)
         {
-            // NOT: Hocanın uyarısına göre burada doğrudan 'User' yerine 'UserCreateDto' kullanmalısın.
-            // Ama şimdilik hata gitmesi için isimleri düzelttim.
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok(user);
+            var createdUser = await _userService.AddUserAsync(userDto);
+            return Ok(createdUser);
         }
     }
 }

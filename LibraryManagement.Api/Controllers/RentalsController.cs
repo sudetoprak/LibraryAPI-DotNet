@@ -1,57 +1,46 @@
-﻿using LibraryManagement.Infrastructure.Context;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LibraryManagement.Application;
+﻿using Microsoft.AspNetCore.Mvc;
+using LibraryManagement.Application; 
 
-namespace LibraryManagement.Api.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-public class RentalsController : ControllerBase
+namespace LibraryManagement.Api.Controllers
 {
-    private readonly IRentalService _rentalService;
-    private readonly AppDbContext _context;
-
-    public RentalsController(IRentalService rentalService, AppDbContext context)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RentalsController : ControllerBase
     {
-        _rentalService = rentalService;
-        _context = context;
-    }
+        private readonly IRentalService _rentalService;
 
-    [HttpPost("rent")]
-    public async Task<IActionResult> RentBook(int userId, int bookId)
-    {
-        var result = await _rentalService.RentBookAsync(userId, bookId);
-        if (result.Contains("başarıyla")) return Ok(result);
-        return BadRequest(result);
-    }
+        public RentalsController(IRentalService rentalService)
+        {
+            _rentalService = rentalService;
+        }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<object>>> GetRentals()
-    {
-        var rentals = await _context.Rentals
-            .Include(r => r.User)
-            .Include(r => r.Book)
-            .Select(r => new
-            {
-                r.Id,
-                r.RentalDate,
-                UserName = r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
-                BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
-                r.BookId,
-                r.UserId
-            })
-            .ToListAsync();
+        [HttpPost("rent")]
+        public async Task<IActionResult> RentBook(int userId, int bookId)
+        {
+            var result = await _rentalService.RentBookAsync(userId, bookId);
 
-        return Ok(rentals);
-    }
+            if (result.Contains("başarıyla"))
+                return Ok(result);
 
-    [HttpDelete("return/{id}")]
-    public async Task<IActionResult> ReturnBook(int id)
-    {
-        var result = await _rentalService.ReturnBookAsync(id);
+            return BadRequest(result);
+        }
 
-        if (result.Contains("Hata")) return NotFound(result);
-        return Ok(result);
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetRentals()
+        {
+            var rentals = await _rentalService.GetAllRentalsAsync();
+            return Ok(rentals);
+        }
+
+        [HttpDelete("return/{id}")]
+        public async Task<IActionResult> ReturnBook(int id)
+        {
+            var result = await _rentalService.ReturnBookAsync(id);
+
+            if (result.Contains("Hata"))
+                return NotFound(result);
+
+            return Ok(result);
+        }
     }
 }
