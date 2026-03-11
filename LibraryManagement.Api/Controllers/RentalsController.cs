@@ -32,14 +32,11 @@ namespace LibraryManagement.Api.Controllers
             return Ok(rentals);
         }
 
-        [HttpDelete("return/{id}")]
-        public async Task<IActionResult> ReturnBook(int id)
+        [HttpPost("return/{rentalId}")]
+        public async Task<IActionResult> ReturnBook(int rentalId)
         {
-            var result = await _rentalService.ReturnBookAsync(id);
-
-            if (result.Contains("Hata"))
-                return NotFound(result);
-
+            var result = await _rentalService.ReturnBookAsync(rentalId);
+            if (result.StartsWith("Hata")) return BadRequest(result);
             return Ok(result);
         }
     }

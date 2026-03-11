@@ -13,5 +13,6 @@ namespace LibraryManagement.Application
         Task<List<BookDto>> GetAllBooksAsync();
         Task<BookDto> AddBookAsync(BookCreateDto dto);
         Task<bool> DeleteBookAsync(int id);
+        Task<bool> UpdateBookAsync(int id, BookCreateDto dto);
     }
 }

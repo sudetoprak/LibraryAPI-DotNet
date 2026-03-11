@@ -30,6 +30,14 @@ public class BooksController : ControllerBase
         return Ok(newBook);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBook(int id, BookCreateDto dto)
+    {
+        var success = await _bookService.UpdateBookAsync(id, dto);
+        if (!success) return NotFound("Güncellenecek kitap bulunamadı.");
+        return Ok("Kitap başarıyla güncellendi.");
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteBook(int id)
     {
@@ -39,4 +47,5 @@ public class BooksController : ControllerBase
 
         return Ok(new { message = "Kitap başarıyla silindi (Soft Delete)." });
     }
+
 }
