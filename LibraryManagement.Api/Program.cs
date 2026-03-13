@@ -1,8 +1,10 @@
-using LibraryManagement.Infrastructure.Context; 
+using LibraryManagement.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Api.Middlewares;
 using LibraryManagement.Application;
-using LibraryManagement.Application;
+using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

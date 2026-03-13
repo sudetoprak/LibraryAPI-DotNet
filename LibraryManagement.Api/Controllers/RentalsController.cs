@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using LibraryManagement.Application;
+using LibraryManagement.Application.Interfaces;
 
 namespace LibraryManagement.Api.Controllers
 {

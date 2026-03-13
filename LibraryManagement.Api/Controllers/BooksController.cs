@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using LibraryManagement.Application;
 using LibraryManagement.Application.DTOs;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Api.Controllers;
+using LibraryManagement.Application.Interfaces;
 namespace LibraryManagement.Api.Controllers;
 
 [Route("api/[controller]")]

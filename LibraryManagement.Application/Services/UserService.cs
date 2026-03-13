@@ -2,8 +2,9 @@
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
+using LibraryManagement.Application.Interfaces;
 
-namespace LibraryManagement.Application;
+namespace LibraryManagement.Application.Services;
 
 public class UserService : IUserService
 {

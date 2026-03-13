@@ -2,8 +2,9 @@
 using LibraryManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.Interfaces;
 
-namespace LibraryManagement.Application;
+namespace LibraryManagement.Application.Services;
 
 public class RentalService : IRentalService
 {

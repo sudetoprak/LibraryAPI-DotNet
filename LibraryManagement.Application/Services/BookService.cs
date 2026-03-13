@@ -2,8 +2,9 @@
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
+using LibraryManagement.Application.Interfaces;
 
-namespace LibraryManagement.Application;
+namespace LibraryManagement.Application.Services;
 
 public class BookService : IBookService
 {
@@ -14,7 +15,6 @@ public class BookService : IBookService
         _context = context;
     }
 
-    // 1. Tüm Kitapları Getir (Soft Delete olanlar hariç)
     public async Task<List<BookDto>> GetAllBooksAsync()
     {
         return await _context.Books
@@ -29,7 +29,6 @@ public class BookService : IBookService
             }).ToListAsync();
     }
 
-    // 2. Yeni Kitap Ekle
     public async Task<BookDto> AddBookAsync(BookCreateDto dto)
     {
         var book = new Book
@@ -71,7 +70,6 @@ public class BookService : IBookService
         return true;
     }
 
-    // 4. Kitap Sil (Soft Delete)
     public async Task<bool> DeleteBookAsync(int id)
     {
         var book = await _context.Books.FindAsync(id);
