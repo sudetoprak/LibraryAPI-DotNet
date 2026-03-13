@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryManagement.Application.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace LibraryManagement.Application
 {
     public interface IRentalService
     {
-        Task<string> RentBookAsync(int userId, int bookId);
-        Task<string> ReturnBookAsync(int rentalId);
-        Task<IEnumerable<object>> GetAllRentalsAsync(); 
+        Task<ServiceResult> RentBookAsync(int userId, int bookId);
+        Task<ServiceResult> ReturnBookAsync(int rentalId);
+        Task<IEnumerable<object>> GetAllRentalsAsync();
     }
 }
