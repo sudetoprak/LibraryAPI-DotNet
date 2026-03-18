@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.DTOs; 
 
 namespace LibraryManagement.Api.Controllers
 {
@@ -22,15 +23,11 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpPost("rent")]
-        public async Task<IActionResult> Rent(int userId, int bookId)
+        public async Task<IActionResult> Rent([FromBody] RentalCreateDto dto)
         {
-            var result = await _rentalService.RentBookAsync(userId, bookId);
+            var result = await _rentalService.RentBookAsync(dto.FullName, dto.Email, dto.BookId);
 
-            if (!result.IsSuccess)
-            {
-                return BadRequest(new { error = result.Message });
-            }
-
+            if (!result.IsSuccess) return BadRequest(new { error = result.Message });
             return Ok(new { message = result.Message });
         }
 
@@ -43,10 +40,10 @@ namespace LibraryManagement.Api.Controllers
             {
                 if (result.Message.Contains("bulunamadı"))
                 {
-                    return NotFound(new { error = result.Message }); 
+                    return NotFound(new { error = result.Message });
                 }
 
-                return BadRequest(new { error = result.Message });  
+                return BadRequest(new { error = result.Message });
             }
 
             return Ok(new { message = result.Message });

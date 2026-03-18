@@ -15,45 +15,60 @@ public class RentalService : IRentalService
         _context = context;
     }
 
-    public async Task<ServiceResult> RentBookAsync(int userId, int bookId)
+    // BURAYI DÜZELTTİK: Parametreler (string fullName, string email, int bookId) olmalı!
+    public async Task<ServiceResult> RentBookAsync(string fullName, string email, int bookId)
     {
+        // 1. Kitabı kontrol et
         var book = await _context.Books.FindAsync(bookId);
-        var user = await _context.Users.FindAsync(userId);
-
         if (book == null) return ServiceResult.Failure("Kitap bulunamadı!");
-        if (user == null) return ServiceResult.Failure("Kullanıcı bulunamadı!");
         if (book.StockCount <= 0) return ServiceResult.Failure("Bu kitap şu an stokta yok!");
 
+        // 2. Kullanıcıyı bul veya yoksa otomatik oluştur
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                FullName = fullName,
+                Email = email
+            };
+            _context.Users.Add(user);
+            // ID'nin oluşması için önce kullanıcıyı kaydediyoruz
+            await _context.SaveChangesAsync();
+        }
+
+        // 3. Kiralama kaydını oluştur (Artık user.Id garanti)
         var rental = new Rental
         {
             BookId = bookId,
-            UserId = userId,
+            UserId = user.Id,
             RentalDate = DateTime.Now,
             IsReturned = false,
             IsDeleted = false
         };
 
+        // 4. Stok düşür ve kaydet
         book.StockCount--;
         _context.Rentals.Add(rental);
         await _context.SaveChangesAsync();
 
-        return ServiceResult.Success($"Kitap başarıyla kiralandı. Kalan stok: {book.StockCount}");
+        return ServiceResult.Success($"{user.FullName} için kiralama başarılı! Kalan stok: {book.StockCount}");
     }
 
     public async Task<ServiceResult> ReturnBookAsync(int rentalId)
     {
         var rental = await _context.Rentals
             .Include(r => r.Book)
-            .IgnoreQueryFilters() 
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(r => r.Id == rentalId);
 
         if (rental == null) return ServiceResult.Failure("Kiralama kaydı bulunamadı.");
         if (rental.IsReturned) return ServiceResult.Failure("Bu kitap zaten iade edilmiş.");
 
-        
         if (rental.Book != null)
         {
-            rental.Book.StockCount++; 
+            rental.Book.StockCount++;
         }
 
         rental.IsReturned = true;

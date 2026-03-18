@@ -1,7 +1,6 @@
 using LibraryManagement.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Api.Middlewares;
-using LibraryManagement.Application;
 using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.Services;
 
@@ -11,10 +10,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
 
 builder.Services.AddScoped<IRentalService, RentalService>();
-builder.Services.AddScoped<IBookService, BookService>(); 
+builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,10 +34,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
+
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
-app.UseHttpsRedirection();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

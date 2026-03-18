@@ -11,5 +11,6 @@ namespace LibraryManagement.Application.Interfaces
     {
         Task<List<UserDto>> GetAllUsersAsync();
         Task<UserDto> AddUserAsync(UserCreateDto dto);
+
     }
 }

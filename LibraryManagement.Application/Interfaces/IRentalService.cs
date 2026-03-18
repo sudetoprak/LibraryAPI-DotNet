@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagement.Application.Interfaces
+using LibraryManagement.Application.DTOs;
+
+namespace LibraryManagement.Application.Interfaces;
+
+public interface IRentalService
 {
-    public interface IRentalService
-    {
-        Task<ServiceResult> RentBookAsync(int userId, int bookId);
-        Task<ServiceResult> ReturnBookAsync(int rentalId);
-        Task<IEnumerable<object>> GetAllRentalsAsync();
-    }
+   
+    Task<ServiceResult> RentBookAsync(string fullName, string email, int bookId);
+
+    Task<ServiceResult> ReturnBookAsync(int rentalId);
+    Task<IEnumerable<object>> GetAllRentalsAsync();
 }
