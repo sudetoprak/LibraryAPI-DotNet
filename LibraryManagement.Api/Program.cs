@@ -17,6 +17,7 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
+//test 
 
 builder.Services.AddScoped<IRentalService, RentalService>();
 builder.Services.AddScoped<IBookService, BookService>();
