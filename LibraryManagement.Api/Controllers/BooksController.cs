@@ -17,13 +17,22 @@ public class BooksController : ControllerBase
         _bookService = bookService;
     }
 
+    /*
+     Yapan = Sude
+    Taihl = 17.06.2024
+        Açıklama = Kitap işlemleri için API controller'ı. CRUD işlemlerini içerir.
+     */
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
     {
         var books = await _bookService.GetAllBooksAsync();
         return Ok(books);
     }
-
+    /*
+     * yapan = Sude
+     * tarih = 17.06.2024
+     * açıklama = Yeni bir kitap eklemek için POST endpoint'i. BookCreateDto alır ve eklenen kitabın bilgilerini döner.
+     */
     [HttpPost]
     public async Task<ActionResult<BookDto>> PostBook(BookCreateDto bookDto)
     {
