@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LibraryManagement.Domain;
 
 namespace LibraryManagement.Domain.Entities
 {
-    public class Author
+    public class Author:BaseEntity
     {
+        public readonly object BookAuthors;
+
         public String FullName { get; set; } = string.Empty;
         public String Bio { get; set; } = string.Empty;
+        public ICollection<BookAuthor> BookAuthorList { get; set; }
     }
 }

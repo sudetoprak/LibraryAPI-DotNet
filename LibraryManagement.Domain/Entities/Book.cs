@@ -17,9 +17,11 @@ namespace LibraryManagement.Domain.Entities
         public  Category? Category { get; set; }
 
         public int? PublishedYear { get; set; }
+        public ICollection<BookAuthor>? BookAuthors { get; set; } = new List<BookAuthor>();
 
         [Range(0, int.MaxValue, ErrorMessage = "Stok adedi 0'dan küçük olamaz!")]
         public int StockCount { get; set; }
         public bool IsAvailable => StockCount > 0;
+
     }
 }

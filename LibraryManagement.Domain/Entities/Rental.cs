@@ -9,6 +9,8 @@ namespace LibraryManagement.Domain.Entities
 {
     public class Rental : BaseEntity
     {
+        public object LateFee;
+
         public int BookId { get; set; }
         public int UserId { get; set; }
 
