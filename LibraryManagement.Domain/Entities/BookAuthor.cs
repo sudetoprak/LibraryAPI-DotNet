@@ -8,7 +8,7 @@ using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Domain.Entities
 {
-    public class BookAuthor
+    public class BookAuthor:BaseEntity
     {
         public int BookId { get; set; }
         public Book? Book { get; set; }

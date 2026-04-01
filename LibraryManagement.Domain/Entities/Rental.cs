@@ -9,7 +9,6 @@ namespace LibraryManagement.Domain.Entities
 {
     public class Rental : BaseEntity
     {
-        public object LateFee;
 
         public int BookId { get; set; }
         public int UserId { get; set; }
@@ -18,10 +17,12 @@ namespace LibraryManagement.Domain.Entities
         public Book? Book { get; set; }
 
         public DateTime RentalDate { get; set; }
-
-       
         public bool IsReturned { get; set; } = false;
 
-        public DateTime? ReturnDate { get; set; }
+        public DateTime ReturnDate { get; set; } 
+
+        public DateTime? DueDate { get; set; }
+        public Decimal LateFee { get; set; }
+
     }
 }

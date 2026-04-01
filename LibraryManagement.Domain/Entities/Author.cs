@@ -9,8 +9,6 @@ namespace LibraryManagement.Domain.Entities
 {
     public class Author:BaseEntity
     {
-       
-
         public String FullName { get; set; } = string.Empty;
         public String Bio { get; set; } = string.Empty;
         public ICollection<BookAuthor> BookAuthors=new List<BookAuthor>();

@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString,
+        b => b.MigrationsAssembly("LibraryManagement.Infrastructure")));
 
 builder.Services.AddCors(options =>
 {

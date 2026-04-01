@@ -29,18 +29,24 @@ namespace LibraryManagement.Infrastructure.Context
             modelBuilder.Entity<Role>().HasQueryFilter(r => !r.IsDeleted);
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
 
+            modelBuilder.Entity<BookAuthor>().HasQueryFilter(ba => !ba.IsDeleted);
+
+            // BookAuthor - Book ilişkisini optional yap
             modelBuilder.Entity<BookAuthor>()
-                .HasKey(ba => new { ba.BookId, ba.AuthorId });
+                .HasOne(ba => ba.Author)
+                .WithMany(a => a.BookAuthors)
+                .HasForeignKey(ba => ba.AuthorId)
+                .IsRequired(false); // ← optional yap
 
             modelBuilder.Entity<BookAuthor>()
                 .HasOne(ba => ba.Book)
                 .WithMany(b => b.BookAuthors)
-                .HasForeignKey(ba => ba.BookId);
+                .HasForeignKey(ba => ba.BookId)
+                .IsRequired(false);
 
+            // Bileşik PK
             modelBuilder.Entity<BookAuthor>()
-                .HasOne(ba => ba.Author)
-                .WithMany(a => a.BookAuthors)
-                .HasForeignKey(ba => ba.AuthorId);
+                .HasKey(ba => new { ba.BookId, ba.AuthorId });
 
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Category)
