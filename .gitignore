@@ -361,4 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/LibraryManagement.Domain/Entities/BookAuthor.cs
+LibraryManagement.Domain/Entities/BookAuthor.cs
