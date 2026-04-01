@@ -14,3 +14,4 @@ namespace LibraryManagement.Domain.Entities
         public ICollection<Rental>? Rentals { get; set; } = new List<Rental>();
     }
 }
+

@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.DTOs
-{
+{// kitap kiralama işlemi için kullanıcıdan hangi bilgileri alacağımızı belirtiyoruz.
+ //bookid ,fullname ve email bilgilerini alıyoruz çünkü kiralama işlemi için hangi kitabın kiralanacağını ,kimin kiralayacağını ve iletişim bilgilerini bilmemiz gerekiyor
+
     public class RentalCreateDto
     {
         public int BookId { get; set; }

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.Interfaces
 {
+    //interface, servis katmanında hangi işlemlerin yapılacağını belirtiyoruz. Bu sayede, servis katmanında yapılan işlemlerin sonucunu daha kolay yönetebilir ve kullanıcıya anlamlı geri bildirimler sağlayabiliriz.
+    
     public interface IBookService
     {
         Task<List<BookDto>> GetAllBooksAsync();

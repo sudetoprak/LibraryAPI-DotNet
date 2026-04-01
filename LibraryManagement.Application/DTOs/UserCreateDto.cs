@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.DTOs
 {
+    //kullanıc tarafından yeni bir kullanıcı oluşturmak istediğinde ,kullanıcıdan hangi bilgileri alacağımızı belirtiyoruz
+    //fullname ve email 
     public class UserCreateDto
     {
         [Required(ErrorMessage = "Ad Soyad zorunludur.")]

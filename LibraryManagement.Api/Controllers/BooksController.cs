@@ -8,6 +8,8 @@ namespace LibraryManagement.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 
+
+
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
@@ -19,7 +21,6 @@ public class BooksController : ControllerBase
 
     /*
      Yapan = Sude
-    Taihl = 17.06.2024
         Açıklama = Kitap işlemleri için API controller'ı. CRUD işlemlerini içerir.
      */
     [HttpGet]
@@ -30,7 +31,6 @@ public class BooksController : ControllerBase
     }
     /*
      * yapan = Sude
-     * tarih = 17.06.2024
      * açıklama = Yeni bir kitap eklemek için POST endpoint'i. BookCreateDto alır ve eklenen kitabın bilgilerini döner.
      */
     [HttpPost]

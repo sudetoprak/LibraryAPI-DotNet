@@ -9,6 +9,7 @@ using LibraryManagement.Application.DTOs;
 
 namespace LibraryManagement.Application.Interfaces;
 
+//kulla
 public interface IRentalService
 {
    

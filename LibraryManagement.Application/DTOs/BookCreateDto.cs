@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.DTOs
 {
-    
+    //kullanıc tarafından kitap eklemek istediğinde ,kullanıcıdan hangi bilgileri alacağımızı belirtiyoruz
     public class BookCreateDto
     {
         [Required(ErrorMessage = "Kitap başlığı boş bırakılamaz.")]
