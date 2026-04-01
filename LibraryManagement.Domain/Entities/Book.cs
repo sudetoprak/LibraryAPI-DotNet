@@ -13,6 +13,11 @@ namespace LibraryManagement.Domain.Entities
         public string Author { get; set; } = string.Empty;
         public string ISBN { get; set; } = string.Empty;
 
+        public int? CategoryId { get; set; }
+        public  Category? Category { get; set; }
+
+        public int? PublishedYear { get; set; }
+
         [Range(0, int.MaxValue, ErrorMessage = "Stok adedi 0'dan küçük olamaz!")]
         public int StockCount { get; set; }
         public bool IsAvailable => StockCount > 0;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement.Domain.Entities
 {
-    class BookAuthor
+    public class BookAuthor
     {
         public int BookId { get; set; }
         public Book Book { get; set; }
