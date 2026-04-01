@@ -9,10 +9,10 @@ namespace LibraryManagement.Domain.Entities
 {
     public class Author:BaseEntity
     {
-        public readonly object BookAuthors;
+       
 
         public String FullName { get; set; } = string.Empty;
         public String Bio { get; set; } = string.Empty;
-        public ICollection<BookAuthor> BookAuthorList { get; set; }
+        public ICollection<BookAuthor> BookAuthors=new List<BookAuthor>();
     }
 }
