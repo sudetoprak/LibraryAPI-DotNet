@@ -22,7 +22,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IRentalService, RentalService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAuthorService, AuthorService>(); 
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
