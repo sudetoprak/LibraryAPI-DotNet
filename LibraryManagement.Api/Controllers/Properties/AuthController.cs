@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace LibraryManagement.Api.Controllers.Properties
 
 {
-    public class AuthController
-    {
         [Route("api/[controller]")]
         [ApiController]
         public class AuthController : ControllerBase
