@@ -1,5 +1,6 @@
 ﻿using System;
-using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
 using LibraryManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

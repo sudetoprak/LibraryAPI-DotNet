@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace LibraryManagement.Application.DTOs
+namespace LibraryManagement.Application.DTOs.Requests
 {
     public class CategoryCreateDto
     {

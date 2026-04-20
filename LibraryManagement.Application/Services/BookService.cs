@@ -1,8 +1,9 @@
 ﻿using LibraryManagement.Infrastructure.Context;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-namespace LibraryManagement.Application.DTOs
+namespace LibraryManagement.Application.DTOs.Responses
     
 {
     public class RegisterDto

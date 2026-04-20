@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
-using LibraryManagement.Application.DTOs;
 using LibraryManagement.Application.Interfaces;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
 
 
 namespace LibraryManagement.Api.Controllers

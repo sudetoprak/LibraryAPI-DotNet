@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LibraryManagement.Application.DTOs;
+using LibraryManagement.Application.DTOs.Responses;
 using LibraryManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagement.Api.Controllers.Properties
 
 {
-        [Route("api/[controller]")]
-        [ApiController]
-        public class AuthController : ControllerBase
-        {
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+      
+       
             private readonly IAuthService _authService;
             public AuthController(IAuthService authService)
             {
@@ -22,7 +24,7 @@ namespace LibraryManagement.Api.Controllers.Properties
             [HttpPost("register")]
             public async Task<IActionResult> Register(RegisterDto dto)
             {
-                var result = await _authService.RegisterAsync(dto);
+                var result = await _authService.RegisterAsync(dto.FullName, dto.Email, dto.Password);
                 if (!result.IsSuccess) return BadRequest(new { error = result.Message });
                 return Ok(new { message = result.Message });
             }
@@ -36,4 +38,3 @@ namespace LibraryManagement.Api.Controllers.Properties
             }
         }
     }
-}

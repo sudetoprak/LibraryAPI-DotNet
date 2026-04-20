@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagement.Application.DTOs
+namespace LibraryManagement.Application.DTOs.Responses
 {
     //Dto ,kullanıcıcn ham verisini deil ,sadece kullanıcının görmek istediği kısımdır 
     public class BookDto

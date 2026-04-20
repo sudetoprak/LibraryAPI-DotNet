@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using LibraryManagement.Application.DTOs;
 using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Infrastructure.Context;
@@ -16,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using BCrypt.Net;
 using System.Security.Cryptography;
 using System.IO;
+using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services
 {

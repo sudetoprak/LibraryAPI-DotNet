@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.Application.Interfaces;
-using LibraryManagement.Application.DTOs; 
+using LibraryManagement.Application.DTOs.Requests;
 
 namespace LibraryManagement.Api.Controllers
 {

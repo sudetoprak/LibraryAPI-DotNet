@@ -1,4 +1,5 @@
-﻿using LibraryManagement.Application.DTOs;
+﻿using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
 using LibraryManagement.Domain.Entities;
 using System;
 using System.Collections.Generic;
