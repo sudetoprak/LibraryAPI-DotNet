@@ -12,7 +12,7 @@ using LibraryManagement.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Application.Services
-{
+{ 
     public class AuthorService : IAuthorService
     {
         private readonly AppDbContext _context;
@@ -21,7 +21,7 @@ namespace LibraryManagement.Application.Services
         {
             _context = context;
         }
-
+        
         public async Task<List<AuthorDto>> GetAllAuthorsAsync()
         {
             return await _context.Authors
@@ -29,17 +29,19 @@ namespace LibraryManagement.Application.Services
                 .Select(a => new AuthorDto
                 {
                     Id = a.Id,
-                    FullName = a.FullName,
+                    FirstName = a.FirstName,
+                    LastName = a.LastName,
                     Bio = a.Bio
                 })
                 .ToListAsync();
         }
-        //yazar eklerken IsDeleted alanını false olarak ayarlıyoruz çünkü yeni eklenen yazar silinmiş kabul edilmez
+        //yazar eklerken IsDeleted alanını false olarak ayarlıyoruz çünkü yeni eklenen yazar silinmiş kabul edilmez 
         public async Task<AuthorDto> AddAuthorAsync(AuthorCreateDto dto)
         {
             var author = new Author
             {
-                FullName = dto.FullName,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
                 Bio = dto.Bio,
                 IsDeleted = false
             };
@@ -50,7 +52,8 @@ namespace LibraryManagement.Application.Services
             return new AuthorDto
             {
                 Id = author.Id,
-                FullName = author.FullName,
+                FirstName = author.FirstName,
+                LastName = author.LastName,
                 Bio = author.Bio
             };
         }
@@ -60,7 +63,8 @@ namespace LibraryManagement.Application.Services
             var author = await _context.Authors.FindAsync(id);
             if (author == null || author.IsDeleted) return false;
 
-            author.FullName = dto.FullName;
+            author.FirstName = dto.FirstName;
+            author.LastName = dto.LastName;
             author.Bio = dto.Bio;
 
             _context.Authors.Update(author);

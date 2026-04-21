@@ -10,7 +10,8 @@ namespace LibraryManagement.Application.DTOs.Requests
     public class AuthorCreateDto
     {
         [Required(ErrorMessage = "Yazar adi zorunludur.")]
-        public string FullName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string Bio { get; set; }
     }
 }
