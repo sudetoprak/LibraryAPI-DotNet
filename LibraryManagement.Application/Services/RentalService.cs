@@ -3,7 +3,8 @@ using LibraryManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.DTOs.Responses;
-
+using static LibraryManagement.Domain.Entities.Rental;
+using System;
 namespace LibraryManagement.Application.Services;
 
 public class RentalService : IRentalService
@@ -44,7 +45,8 @@ public class RentalService : IRentalService
             BookId = bookId,
             UserId = user.Id,
             RentalDate = DateTime.Now,
-            IsReturned = false,
+            DueDate = DateTime.Now.AddDays(14), // 2 hafta
+            Status = RentalStatus.Active,
             IsDeleted = false
         };
 
@@ -64,15 +66,13 @@ public class RentalService : IRentalService
             .FirstOrDefaultAsync(r => r.Id == rentalId);
 
         if (rental == null) return ServiceResult.Failure("Kiralama kaydı bulunamadı.");
-        if (rental.IsReturned) return ServiceResult.Failure("Bu kitap zaten iade edilmiş.");
+        if (rental.Status == RentalStatus.Returned)
+            return ServiceResult.Failure("Bu kitap zaten iade edilmiş.");
 
-        if (rental.Book != null)
-        {
-            rental.Book.StockCount++;
-        }
-
-        rental.IsReturned = true;
+        rental.Status = RentalStatus.Returned;
         rental.ReturnDate = DateTime.Now;
+
+        
 
         await _context.SaveChangesAsync();
         return ServiceResult.Success("Kitap başarıyla iade edildi ve stok güncellendi.");
@@ -89,6 +89,7 @@ public class RentalService : IRentalService
                 r.RentalDate,
                 r.ReturnDate,
                 r.IsReturned,
+                r.Status,
                 UserName = r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
                 BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
                 r.BookId,

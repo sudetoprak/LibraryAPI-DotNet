@@ -19,6 +19,7 @@ using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services
 {
+    // kullanıcının e-posta adresinin benzersiz olduğunu kontrol eder ve şifreyi güvenli bir şekilde hash'ler. Giriş sırasında, kullanıcının e-posta adresi ve şifresini doğrular ve başarılı bir giriş durumunda JWT token'ı oluşturur. Bu token, kullanıcının kimliğini doğrulamak ve yetkilendirmek için kullanılır.
     public class AuthService : IAuthService
     {
         private readonly AppDbContext _context;
@@ -30,7 +31,7 @@ namespace LibraryManagement.Application.Services
             _context = context;
             _configuration = configuration;
         }
-
+       
         public async Task<ServiceResult> RegisterAsync(string fullName, string email, string password)
         {
             var exists = await _context.Users.AnyAsync(u => u.Email == email);
@@ -41,7 +42,7 @@ namespace LibraryManagement.Application.Services
                 FullName = fullName,
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                RoleId = 2 // Default role: User
+                RoleId = 2 
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();

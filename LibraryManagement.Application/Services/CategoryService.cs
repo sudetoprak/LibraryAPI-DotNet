@@ -21,7 +21,6 @@ namespace LibraryManagement.Application.Services
             _context = context;
         }
 
-
         public async Task<List<CategoryDto>> GetAllCategoriesAsync()
         {
             return await _context.Categories
@@ -56,6 +55,7 @@ namespace LibraryManagement.Application.Services
             await _context.SaveChangesAsync();
             return true;
         }
+       
         public async Task<bool> DeleteCategoryAsync(int id)
         {
             var category = await _context.Categories.FindAsync(id);

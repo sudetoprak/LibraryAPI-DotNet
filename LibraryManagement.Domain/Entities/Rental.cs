@@ -9,6 +9,13 @@ namespace LibraryManagement.Domain.Entities
 {
     public class Rental : BaseEntity
     {
+
+        public enum RentalStatus
+        {
+            Active,
+            Returned,
+            Overdue
+        }
         // Rental sınıfı, kitap kiralama işlemlerini temsil eder. Bu sınıf, kullanıcıların hangi kitapları kiraladığını, kiralama tarihlerini, iade durumlarını ve geç iade durumlarında uygulanacak ücretleri takip etmek için kullanılır. Rental sınıfı, kullanıcılar ve kitaplar arasında bire çok ilişki içindedir, yani bir kullanıcı birden fazla kitabı kiralayabilir ve bir kitap da birden fazla kullanıcı tarafından kiralanabilir.
         public int BookId { get; set; }
         public int UserId { get; set; }
@@ -19,8 +26,9 @@ namespace LibraryManagement.Domain.Entities
         public DateTime RentalDate { get; set; }
         public bool IsReturned { get; set; } = false;
 
-        public DateTime ReturnDate { get; set; } 
+        public DateTime ReturnDate { get; set; }
 
+        public RentalStatus Status { get; set; } = RentalStatus.Active;
         public DateTime? DueDate { get; set; }
         public Decimal LateFee { get; set; }
 
