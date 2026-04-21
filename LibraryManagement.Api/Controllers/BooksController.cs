@@ -4,6 +4,7 @@ using LibraryManagement.Api.Controllers;
 using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.DTOs.Requests;
 using LibraryManagement.Application.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
 namespace LibraryManagement.Api.Controllers;
 
 [Route("api/[controller]")]
@@ -42,6 +43,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> UpdateBook(int id, BookCreateDto dto)
     {
         var success = await _bookService.UpdateBookAsync(id, dto);
@@ -50,6 +52,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteBook(int id)
     {
         var success = await _bookService.DeleteBookAsync(id);

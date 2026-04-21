@@ -7,15 +7,12 @@ using LibraryManagement.Application.DTOs.Responses;
 using LibraryManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LibraryManagement.Api.Controllers.Properties
-
+namespace LibraryManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-      
-       
             private readonly IAuthService _authService;
             public AuthController(IAuthService authService)
             {
