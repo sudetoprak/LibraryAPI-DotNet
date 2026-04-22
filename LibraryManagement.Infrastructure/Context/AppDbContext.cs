@@ -30,7 +30,11 @@ namespace LibraryManagement.Infrastructure.Context
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
 
             modelBuilder.Entity<BookAuthor>().HasQueryFilter(ba => !ba.IsDeleted);
-
+            modelBuilder.Entity<Role>().HasData(
+            new Role { Id = 1, Name = "Admin", Description = "Her şeyi yapar" },
+            new Role { Id = 2, Name = "Staff", Description = "Ödünç verme ve iade işlemleri" },
+            new Role { Id = 3, Name = "Member", Description = "Sadece kendi geçmişini görür" }
+);
             // BookAuthor - Book ilişkisini optional yap
             modelBuilder.Entity<BookAuthor>()
                 .HasOne(ba => ba.Author)
