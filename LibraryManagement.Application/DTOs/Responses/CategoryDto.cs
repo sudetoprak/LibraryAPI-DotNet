@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagement.Domain
+namespace LibraryManagement.Application.DTOs.Responses
 {
-    public class BaseEntity
-    { 
+    public class CategoryDto
+    {
         public int Id { get; set; }
-        public bool IsDeleted { get; set; } =false; 
+        public string Name { get; set; }    
     }
 }

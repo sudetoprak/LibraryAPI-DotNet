@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace LibraryManagement.Api.Middlewares
-{
+{ 
+    // Açıklama: Bu middleware, gelen HTTP isteklerini ve giden HTTP cevaplarını loglamak için kullanılır. İstek geldiğinde ve cevap gönderildiğinde loglama yapar.
     public class RequestResponseLoggingMiddleware
     {
         private readonly RequestDelegate _next;

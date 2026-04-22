@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.Application.Interfaces;
-using LibraryManagement.Application.DTOs; 
+using LibraryManagement.Application.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagement.Api.Controllers
 {
@@ -23,6 +24,7 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpPost("rent")]
+        [Authorize]
         public async Task<IActionResult> Rent([FromBody] RentalCreateDto dto)
         {
             var result = await _rentalService.RentBookAsync(dto.FullName, dto.Email, dto.BookId);

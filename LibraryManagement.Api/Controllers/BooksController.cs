@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using LibraryManagement.Application.DTOs;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Api.Controllers;
 using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
 namespace LibraryManagement.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+
+
 
 public class BooksController : ControllerBase
 {
@@ -17,13 +21,20 @@ public class BooksController : ControllerBase
         _bookService = bookService;
     }
 
+    /*
+     Yapan = Sude
+        Açıklama = Kitap işlemleri için API controller'ı. CRUD işlemlerini içerir.
+     */
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
     {
         var books = await _bookService.GetAllBooksAsync();
         return Ok(books);
     }
-
+    /*
+     * yapan = Sude
+     * açıklama = Yeni bir kitap eklemek için POST endpoint'i. BookCreateDto alır ve eklenen kitabın bilgilerini döner.
+     */
     [HttpPost]
     public async Task<ActionResult<BookDto>> PostBook(BookCreateDto bookDto)
     {
@@ -32,6 +43,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> UpdateBook(int id, BookCreateDto dto)
     {
         var success = await _bookService.UpdateBookAsync(id, dto);
@@ -40,6 +52,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteBook(int id)
     {
         var success = await _bookService.DeleteBookAsync(id);

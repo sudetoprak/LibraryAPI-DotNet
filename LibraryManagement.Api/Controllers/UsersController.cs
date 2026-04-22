@@ -1,6 +1,7 @@
-﻿using LibraryManagement.Application.DTOs;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Api.Controllers
 {

@@ -1,10 +1,12 @@
 ﻿using LibraryManagement.Infrastructure.Context;
 using LibraryManagement.Domain.Entities;
-using LibraryManagement.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Application.Interfaces;
+using LibraryManagement.Application.DTOs.Requests;
+using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services;
+
 
 public class BookService : IBookService
 {
@@ -14,7 +16,7 @@ public class BookService : IBookService
     {
         _context = context;
     }
-
+    //kitapları getirirken silinmiş olanları getirmemek için IsDeleted kontrolü ekledik
     public async Task<List<BookDto>> GetAllBooksAsync()
     {
         return await _context.Books
@@ -28,7 +30,7 @@ public class BookService : IBookService
                 StockCount = b.StockCount
             }).ToListAsync();
     }
-
+    //kitap eklerken IsDeleted alanını false olarak ayarlıyoruz çünkü yeni eklenen kitap silinmiş kabul edilmez
     public async Task<BookDto> AddBookAsync(BookCreateDto dto)
     {
         var book = new Book
@@ -52,7 +54,7 @@ public class BookService : IBookService
             StockCount = book.StockCount
         };
     }
-
+    //kitap güncellerken de silinmiş olan kitapları güncellemeye çalışmamak için IsDeleted kontrolü ekledik
     public async Task<bool> UpdateBookAsync(int id, BookCreateDto dto)
     {
         var book = await _context.Books.FindAsync(id);
@@ -69,6 +71,8 @@ public class BookService : IBookService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    //kitap silerken de silinmiş olan kitapları tekrar silmeye çalışmamak için IsDeleted kontrolü ekledik. Ayrıca, gerçek bir silme işlemi yerine, kitabın IsDeleted alanını true yaparak "soft delete" uyguluyoruz. Bu sayede, silinen kitaplar veritabanında kalır ancak kullanıcıya gösterilmez .
 
     public async Task<bool> DeleteBookAsync(int id)
     {

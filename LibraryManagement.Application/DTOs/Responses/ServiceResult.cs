@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryManagement.Application.DTOs
+namespace LibraryManagement.Application.DTOs.Responses
 {
-   public  class ServiceResult
+    //  işlem sonucunu göstermek için kullanılan veri taşıyan sınıf. 
+    public class ServiceResult
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
