@@ -12,6 +12,8 @@ namespace LibraryManagement.Domain.Entities
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;
+
+        //bir yazarın birden fazla kitabı olabilir, bu nedenle BookAuthor koleksiyonu, yazarın yazdığı kitapları temsil eder. 
         public ICollection<BookAuthor>? BookAuthors { get; set; }
     }
 }
