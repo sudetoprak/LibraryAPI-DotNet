@@ -18,7 +18,6 @@ using System.IO;
 
 
 using LibraryManagement.Application.DTOs.Responses;
-using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services
 {
