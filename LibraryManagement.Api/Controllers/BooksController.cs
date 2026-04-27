@@ -26,6 +26,7 @@ public class BooksController : ControllerBase
         Açıklama = Kitap işlemleri için API controller'ı. CRUD işlemlerini içerir.
      */
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
     {
         var books = await _bookService.GetAllBooksAsync();
@@ -36,6 +37,7 @@ public class BooksController : ControllerBase
      * açıklama = Yeni bir kitap eklemek için POST endpoint'i. BookCreateDto alır ve eklenen kitabın bilgilerini döner.
      */
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<BookDto>> PostBook(BookCreateDto bookDto)
     {
         var newBook = await _bookService.AddBookAsync(bookDto);
@@ -43,7 +45,8 @@ public class BooksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
+
     public async Task<IActionResult> UpdateBook(int id, BookCreateDto dto)
     {
         var success = await _bookService.UpdateBookAsync(id, dto);
@@ -52,7 +55,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteBook(int id)
     {
         var success = await _bookService.DeleteBookAsync(id);

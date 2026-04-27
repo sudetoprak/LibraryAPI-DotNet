@@ -2,7 +2,8 @@
 using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.DTOs.Requests;
 using Microsoft.AspNetCore.Authorization;
-
+using System.Security.Claims;
+using System.Security.Claims;
 namespace LibraryManagement.Api.Controllers
 {
     [ApiController]
@@ -17,6 +18,7 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var rentals = await _rentalService.GetAllRentalsAsync();
@@ -24,9 +26,12 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpPost("rent")]
-        [Authorize]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Rent([FromBody] RentalCreateDto dto)
         {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;      
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;   
+
             var result = await _rentalService.RentBookAsync(dto.FullName, dto.Email, dto.BookId);
 
             if (!result.IsSuccess) return BadRequest(new { error = result.Message });
@@ -34,6 +39,7 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpPost("return/{id}")]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Return(int id)
         {
             var result = await _rentalService.ReturnBookAsync(id);

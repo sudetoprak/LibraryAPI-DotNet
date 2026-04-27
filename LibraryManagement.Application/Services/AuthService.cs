@@ -15,6 +15,9 @@ using Microsoft.IdentityModel.Tokens;
 using BCrypt.Net;
 using System.Security.Cryptography;
 using System.IO;
+
+
+using LibraryManagement.Application.DTOs.Responses;
 using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services
@@ -42,7 +45,7 @@ namespace LibraryManagement.Application.Services
                 FullName = fullName,
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                RoleId = 2 
+                RoleId = 3
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -51,7 +54,9 @@ namespace LibraryManagement.Application.Services
 
         public async Task<string?> LoginAsync(LoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null) return null;
  
             // Şifre doğrulama
@@ -72,7 +77,8 @@ namespace LibraryManagement.Application.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName)
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Role, user.Role?.Name ?? "Member")
             };
 
             var token = new JwtSecurityToken(
@@ -85,6 +91,8 @@ namespace LibraryManagement.Application.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        
 
     }
 }
