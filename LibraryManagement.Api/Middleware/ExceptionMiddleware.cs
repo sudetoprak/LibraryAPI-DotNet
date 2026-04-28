@@ -1,4 +1,3 @@
-﻿using System.Net;
 using System.Text.Json;
 
 namespace LibraryManagement.Api.Middleware
@@ -6,10 +5,12 @@ namespace LibraryManagement.Api.Middleware
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-       
-        public ExceptionMiddleware(RequestDelegate next)
+        private readonly IWebHostEnvironment _environment;
+
+        public ExceptionMiddleware(RequestDelegate next, IWebHostEnvironment environment)
         {
             _next = next;
+            _environment = environment;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -21,13 +22,13 @@ namespace LibraryManagement.Api.Middleware
             catch (Exception ex)
             {
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
                 var response = new
                 {
-                    status = 500,
+                    status = StatusCodes.Status500InternalServerError,
                     message = "Beklenmeyen bir hata oluştu.",
-                    detail = ex.Message
+                    detail = _environment.IsDevelopment() ? ex.Message : null
                 };
 
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));

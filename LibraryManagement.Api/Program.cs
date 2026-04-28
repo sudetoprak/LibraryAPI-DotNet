@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 
 using LibraryManagement.Application.Validators;
 using LibraryManagement.Api.Middleware;
@@ -37,6 +38,23 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<BookCreateDtoValidator>();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .SelectMany(x => x.Value!.Errors.Select(error => error.ErrorMessage))
+            .ToList();
+
+        return new BadRequestObjectResult(new
+        {
+            status = StatusCodes.Status400BadRequest,
+            message = "Gönderilen bilgiler geçersiz.",
+            errors
+        });
+    };
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -92,7 +110,6 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 app.UseMiddleware<ExceptionMiddleware>(); 
-app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseAuthentication();
 

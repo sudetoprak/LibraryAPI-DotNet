@@ -65,6 +65,7 @@ namespace LibraryManagement.Application.Services
             return GenerateToken(user);
         }
 
+
         private string GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(

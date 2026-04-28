@@ -11,7 +11,7 @@ namespace LibraryManagement.Infrastructure.Context
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
+        // veritabanında ki tablolar
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Rental> Rentals { get; set; }
@@ -22,6 +22,7 @@ namespace LibraryManagement.Infrastructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<Book>().HasQueryFilter(b => !b.IsDeleted);
             modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
             modelBuilder.Entity<Rental>().HasQueryFilter(r => !r.IsDeleted);
