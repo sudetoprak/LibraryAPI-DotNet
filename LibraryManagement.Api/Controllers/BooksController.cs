@@ -27,9 +27,9 @@ public class BooksController : ControllerBase
      */
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
+    public async Task<ActionResult<PagedResult<BookDto>>> GetBooks(int page = 1, int pageSize = 10)
     {
-        var books = await _bookService.GetAllBooksAsync();
+        var books = await _bookService.GetAllBooksAsync(page, pageSize);
         return Ok(books);
     }
     /*

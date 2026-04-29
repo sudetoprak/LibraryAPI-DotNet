@@ -17,18 +17,35 @@ public class BookService : IBookService
         _context = context;
     }
     //kitapları getirirken silinmiş olanları getirmemek için IsDeleted kontrolü ekledik
-    public async Task<List<BookDto>> GetAllBooksAsync()
+    public async Task<PagedResult<BookDto>> GetAllBooksAsync(int page, int pageSize)
     {
-        return await _context.Books
-            .Where(b => !b.IsDeleted)
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
+        var query = _context.Books.Where(b => !b.IsDeleted);
+        var totalCount = await query.CountAsync();
+
+        var books = await query
+            .OrderBy(b => b.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(b => new BookDto
             {
                 Id = b.Id,
                 Title = b.Title,
                 Author = b.Author,
-                ISBN = b.ISBN, 
+                ISBN = b.ISBN,
                 StockCount = b.StockCount
             }).ToListAsync();
+
+        return new PagedResult<BookDto>
+        {
+            Items = books,
+            TotalCount = totalCount,
+            TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+            Page = page,
+            PageSize = pageSize
+        };
     }
     //kitap eklerken IsDeleted alanını false olarak ayarlıyoruz çünkü yeni eklenen kitap silinmiş kabul edilmez
     public async Task<BookDto> AddBookAsync(BookCreateDto dto)

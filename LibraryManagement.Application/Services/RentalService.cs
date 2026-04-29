@@ -16,15 +16,12 @@ public class RentalService : IRentalService
         _context = context;
     }
 
-    // BURAYI DÜZELTTİK: Parametreler (string fullName, string email, int bookId) olmalı!
     public async Task<ServiceResult> RentBookAsync(string fullName, string email, int bookId)
     {
-        // 1. Kitabı kontrol et
         var book = await _context.Books.FindAsync(bookId);
         if (book == null) return ServiceResult.Failure("Kitap bulunamadı!");
         if (book.StockCount <= 0) return ServiceResult.Failure("Bu kitap şu an stokta yok!");
 
-        // 2. Kullanıcıyı bul veya yoksa otomatik oluştur
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         if (user == null)
@@ -35,22 +32,19 @@ public class RentalService : IRentalService
                 Email = email
             };
             _context.Users.Add(user);
-            // ID'nin oluşması için önce kullanıcıyı kaydediyoruz
             await _context.SaveChangesAsync();
         }
 
-        // 3. Kiralama kaydını oluştur (Artık user.Id garanti)
         var rental = new Rental
         {
             BookId = bookId,
             UserId = user.Id,
             RentalDate = DateTime.Now,
-            DueDate = DateTime.Now.AddDays(14), // 2 hafta
+            DueDate = DateTime.Now.AddDays(14), 
             Status = RentalStatus.Active,
             IsDeleted = false
         };
 
-        // 4. Stok düşür ve kaydet
         book.StockCount--;
         _context.Rentals.Add(rental);
         await _context.SaveChangesAsync();
@@ -78,9 +72,12 @@ public class RentalService : IRentalService
         return ServiceResult.Success("Kitap başarıyla iade edildi ve stok güncellendi.");
     }
 
-    public async Task<IEnumerable<object>> GetAllRentalsAsync()
+    public async Task<PagedResult<object>> GetAllRentalsAsync(int page ,int pageSize)
     {
-        return await _context.Rentals
+        page = page <1? 1 : page;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
+        var query = _context.Rentals
             .Include(r => r.User)
             .Include(r => r.Book)
             .Select(r => new
@@ -94,7 +91,39 @@ public class RentalService : IRentalService
                 BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
                 r.BookId,
                 r.UserId
+            });
+        // Toplam kayıt sayısını al
+        var totalCount = await query.CountAsync();
+
+        var rentals = await query
+            .OrderByDescending(r => r.RentalDate) // En yeni kiralamaları önce göster
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new
+            {
+                r.Id,
+                r.RentalDate,
+                r.ReturnDate,
+                r.IsReturned,
+                r.Status,
+               
+                UserName = r.UserName,
+                BookTitle = r.BookTitle,
+
+                r.BookId,
+                r.UserId
             })
-            .ToListAsync();
+
+        .Cast<object>()
+        .ToListAsync();
+
+        return new PagedResult<object>
+        {
+            Items = rentals,
+            TotalCount = totalCount,
+            TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }
