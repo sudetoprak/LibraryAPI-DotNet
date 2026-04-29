@@ -15,4 +15,8 @@ public interface IRentalService
 
     Task<ServiceResult> ReturnBookAsync(int rentalId);
     Task<PagedResult<object>> GetAllRentalsAsync(int page,int pageSize);
+
+    Task<PagedResult<object>> GetOverdueRentalsAsync(int page, int pageSize);
+
+
 }

@@ -25,6 +25,14 @@ namespace LibraryManagement.Api.Controllers
             return Ok(rentals);
         }
 
+        [HttpGet("overdue")]
+        [Authorize]
+        public async Task<IActionResult> GetOverdue(int page = 1, int pageSize = 10)
+        {
+            var rentals = await _rentalService.GetOverdueRentalsAsync(page, pageSize);
+            return Ok(rentals);
+        }
+
         [HttpPost("rent")]
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Rent([FromBody] RentalCreateDto dto)
