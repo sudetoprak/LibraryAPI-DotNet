@@ -72,14 +72,21 @@ public class RentalService : IRentalService
         return ServiceResult.Success("Kitap başarıyla iade edildi ve stok güncellendi.");
     }
 
-    public async Task<PagedResult<object>> GetAllRentalsAsync(int page ,int pageSize)
+    public async Task<PagedResult<object>> GetAllRentalsAsync(int page, int pageSize)
     {
-        page = page <1? 1 : page;
+        page = page < 1 ? 1 : page;
         pageSize = pageSize < 1 ? 10 : pageSize;
 
         var query = _context.Rentals
             .Include(r => r.User)
-            .Include(r => r.Book)
+            .Include(r => r.Book);
+
+        var totalCount = await query.CountAsync();
+
+        var rentals = await query
+            .OrderByDescending(r => r.RentalDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(r => new
             {
                 r.Id,
@@ -91,31 +98,9 @@ public class RentalService : IRentalService
                 BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
                 r.BookId,
                 r.UserId
-            });
-        // Toplam kayıt sayısını al
-        var totalCount = await query.CountAsync();
-
-        var rentals = await query
-            .OrderByDescending(r => r.RentalDate) // En yeni kiralamaları önce göster
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(r => new
-            {
-                r.Id,
-                r.RentalDate,
-                r.ReturnDate,
-                r.IsReturned,
-                r.Status,
-               
-                UserName = r.UserName,
-                BookTitle = r.BookTitle,
-
-                r.BookId,
-                r.UserId
             })
-
-        .Cast<object>()
-        .ToListAsync();
+            .Cast<object>()
+            .ToListAsync();
 
         return new PagedResult<object>
         {

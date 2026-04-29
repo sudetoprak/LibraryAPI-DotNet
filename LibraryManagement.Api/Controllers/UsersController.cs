@@ -17,9 +17,9 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+        public async Task<ActionResult<PagedResult<UserDto>>> GetUsers(int page = 1, int pageSize = 10)
         {
-            var users = await _userService.GetAllUsersAsync();
+            var users = await _userService.GetAllUsersAsync(page, pageSize);
             return Ok(users);
         }
 

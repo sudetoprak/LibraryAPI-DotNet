@@ -10,7 +10,7 @@ namespace LibraryManagement.Application.Interfaces
 {// IUserService, kullanıcılarla ilgili işlemleri tanımlayan bir arayüzdür. Bu arayüz, kullanıcıların listelenmesi ve yeni kullanıcı eklenmesi gibi işlemleri içermektedir. Bu sayede, kullanıcı yönetimi işlemlerini merkezi bir şekilde yönetebilir ve uygulamanın diğer bölümlerinde bu işlemleri kolayca kullanabiliriz.
     public interface IUserService
     {
-        Task<List<UserDto>> GetAllUsersAsync();
+        Task<PagedResult<UserDto>> GetAllUsersAsync(int page, int pageSize);
         Task<UserDto> AddUserAsync(UserCreateDto dto);
 
     }

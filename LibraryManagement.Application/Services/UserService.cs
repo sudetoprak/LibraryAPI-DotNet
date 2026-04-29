@@ -16,10 +16,18 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public async Task<List<UserDto>> GetAllUsersAsync()
+    public async Task<PagedResult<UserDto>> GetAllUsersAsync(int page, int pageSize)
     {
-        return await _context.Users
-            .Where(u => !u.IsDeleted) 
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
+        var query = _context.Users.Where(u => !u.IsDeleted);
+        var totalCount = await query.CountAsync();
+
+        var users = await query
+            .OrderBy(u => u.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(u => new UserDto
             {
                 Id = u.Id,
@@ -27,6 +35,15 @@ public class UserService : IUserService
                 Email = u.Email
             })
             .ToListAsync();
+
+        return new PagedResult<UserDto>
+        {
+            Items = users,
+            TotalCount = totalCount,
+            TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     public async Task<UserDto> AddUserAsync(UserCreateDto dto)

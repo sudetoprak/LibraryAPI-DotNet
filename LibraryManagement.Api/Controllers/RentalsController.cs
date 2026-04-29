@@ -19,9 +19,9 @@ namespace LibraryManagement.Api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
         {
-            var rentals = await _rentalService.GetAllRentalsAsync();
+            var rentals = await _rentalService.GetAllRentalsAsync(page ,pageSize);
             return Ok(rentals);
         }
 

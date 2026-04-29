@@ -17,9 +17,9 @@ namespace LibraryManagement.Api.Controllers
             _categoryService = categoryService;
         }
         [HttpGet]
-        public async Task<ActionResult<List<CategoryDto>>> GetAllCategories()
+        public async Task<ActionResult<PagedResult<CategoryDto>>> GetAllCategories(int page = 1, int pageSize = 10)
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
+            var categories = await _categoryService.GetAllCategoriesAsync(page, pageSize);
             return Ok(categories);
         }
 

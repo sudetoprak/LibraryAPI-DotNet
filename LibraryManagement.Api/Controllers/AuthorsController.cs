@@ -18,9 +18,9 @@ namespace LibraryManagement.Api.Controllers
                 _authorService = authorService;
             }
             [HttpGet]
-            public async Task<ActionResult<List<AuthorDto>>> GetAllAuthors()
+            public async Task<ActionResult<PagedResult<AuthorDto>>> GetAllAuthors(int page = 1, int pageSize = 10)
             {
-                var authors = await _authorService.GetAllAuthorsAsync();
+                var authors = await _authorService.GetAllAuthorsAsync(page, pageSize);
                 return Ok(authors);
             }
             [HttpPost]

@@ -9,7 +9,7 @@ namespace LibraryManagement.Application.Interfaces
 {//interface, servis katmanında hangi işlemlerin yapılacağını belirtiyoruz. Bu sayede, servis katmanında yapılan işlemlerin sonucunu daha kolay yönetebilir ve kullanıcıya anlamlı geri bildirimler sağlayabiliriz.
     public interface ICategoryService
     {
-        Task<List<CategoryDto>> GetAllCategoriesAsync();
+        Task<PagedResult<CategoryDto>> GetAllCategoriesAsync(int page, int pageSize);
         Task<CategoryDto> AddCategoryAsync(CategoryCreateDto dto);
         Task<bool> UpdateCategoryAsync(int id, CategoryCreateDto dto);
         Task<bool> DeleteCategoryAsync(int id);

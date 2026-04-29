@@ -21,16 +21,33 @@ namespace LibraryManagement.Application.Services
             _context = context;
         }
 
-        public async Task<List<CategoryDto>> GetAllCategoriesAsync()
+        public async Task<PagedResult<CategoryDto>> GetAllCategoriesAsync(int page, int pageSize)
         {
-            return await _context.Categories
-                .Where(c => !c.IsDeleted)
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize < 1 ? 10 : pageSize;
+
+            var query = _context.Categories.Where(c => !c.IsDeleted);
+            var totalCount = await query.CountAsync();
+
+            var categories = await query
+                .OrderBy(c => c.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new CategoryDto
                 {
                     Id = c.Id,
                     Name = c.Name
                 })
                 .ToListAsync();
+
+            return new PagedResult<CategoryDto>
+            {
+                Items = categories,
+                TotalCount = totalCount,
+                TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+                Page = page,
+                PageSize = pageSize
+            };
         }
         public async Task<CategoryDto> AddCategoryAsync(CategoryCreateDto dto)
         {

@@ -22,10 +22,18 @@ namespace LibraryManagement.Application.Services
             _context = context;
         }
         
-        public async Task<List<AuthorDto>> GetAllAuthorsAsync()
+        public async Task<PagedResult<AuthorDto>> GetAllAuthorsAsync(int page, int pageSize)
         {
-            return await _context.Authors
-                .Where(a => !a.IsDeleted)
+            page = page < 1 ? 1 : page;
+            pageSize = pageSize < 1 ? 10 : pageSize;
+
+            var query = _context.Authors.Where(a => !a.IsDeleted);
+            var totalCount = await query.CountAsync();
+
+            var authors = await query
+                .OrderBy(a => a.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(a => new AuthorDto
                 {
                     Id = a.Id,
@@ -34,6 +42,15 @@ namespace LibraryManagement.Application.Services
                     Bio = a.Bio
                 })
                 .ToListAsync();
+
+            return new PagedResult<AuthorDto>
+            {
+                Items = authors,
+                TotalCount = totalCount,
+                TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+                Page = page,
+                PageSize = pageSize
+            };
         }
         //yazar eklerken IsDeleted alanını false olarak ayarlıyoruz çünkü yeni eklenen yazar silinmiş kabul edilmez 
         public async Task<AuthorDto> AddAuthorAsync(AuthorCreateDto dto)
