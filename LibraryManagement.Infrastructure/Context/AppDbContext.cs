@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagement.Domain.Entities;
+using LibraryManagement.Domain;
 
 namespace LibraryManagement.Infrastructure.Context
 {
@@ -84,6 +85,36 @@ namespace LibraryManagement.Infrastructure.Context
 
             base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
+        }
+
+        public override int SaveChanges()
+        {
+            ApplyAuditFields();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplyAuditFields();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void ApplyAuditFields()
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.Now;
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                }
+            }
         }
     }
 }
