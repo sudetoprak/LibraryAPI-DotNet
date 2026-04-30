@@ -27,9 +27,9 @@ namespace LibraryManagement.Api.Controllers
 
         [HttpGet("overdue")]
         [Authorize]
-        public async Task<IActionResult> GetOverdue(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetOverdue(int page = 1, int pageSize = 10, string? search = null)
         {
-            var rentals = await _rentalService.GetOverdueRentalsAsync(page, pageSize);
+            var rentals = await _rentalService.GetOverdueRentalsAsync(page, pageSize, search);
             return Ok(rentals);
         }
 
