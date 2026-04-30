@@ -5,6 +5,8 @@ using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.DTOs.Responses;
 using static LibraryManagement.Domain.Entities.Rental;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 namespace LibraryManagement.Application.Services;
 
 public class RentalService : IRentalService
@@ -29,7 +31,9 @@ public class RentalService : IRentalService
             user = new User
             {
                 FullName = fullName,
-                Email = email
+                Email = email,
+                RoleId = 3,
+                PasswordHash = string.Empty
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -64,6 +68,7 @@ public class RentalService : IRentalService
             return ServiceResult.Failure("Bu kitap zaten iade edilmiş.");
 
         rental.Status = RentalStatus.Returned;
+        rental.IsReturned = true;
         rental.ReturnDate = DateTime.Now;
 
         
@@ -91,6 +96,55 @@ public class RentalService : IRentalService
             {
                 r.Id,
                 r.RentalDate,
+                r.ReturnDate,
+                r.IsReturned,
+                r.Status,
+                UserName = r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
+                r.BookId,
+                r.UserId
+            })
+            .Cast<object>()
+            .ToListAsync();
+
+        return new PagedResult<object>
+        {
+            Items = rentals,
+            TotalCount = totalCount,
+            TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<PagedResult<object>> GetOverdueRentalsAsync(int page, int pageSize, string? search)
+    {
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
+        var query = _context.Rentals
+            .Include(r => r.User)
+            .Include(r => r.Book)
+            .Where(r => r.Status != RentalStatus.Returned && r.DueDate < DateTime.Now);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(r =>
+                (r.User != null && r.User.FullName.Contains(search)) ||
+                (r.Book != null && r.Book.Title.Contains(search)));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var rentals = await query
+            .OrderBy(r => r.DueDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new
+            {
+                r.Id,
+                r.RentalDate,
+                r.DueDate,
                 r.ReturnDate,
                 r.IsReturned,
                 r.Status,
