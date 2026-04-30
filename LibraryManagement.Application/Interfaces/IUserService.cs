@@ -12,6 +12,7 @@ namespace LibraryManagement.Application.Interfaces
     {
         Task<PagedResult<UserDto>> GetAllUsersAsync(int page, int pageSize);
         Task<UserDto> AddUserAsync(UserCreateDto dto);
+        Task<ServiceResult> UpdateUserRoleAsync(int userId, int roleId);
 
     }
 }
