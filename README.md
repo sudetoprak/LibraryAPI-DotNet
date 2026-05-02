@@ -1,67 +1,135 @@
-﻿#  Profesyonel Kütüphane Yönetim Sistemi (API)
+# Profesyonel Kütüphane Yönetim Sistemi
 
-Bu proje, modern yazılım mimarileri ve kurumsal standartlar kullanılarak geliştirilmiş kapsamlı bir **Kütüphane Yönetim Otomasyonu**'dur. Proje, üniversite staj programı kapsamında bir web uygulamasının backend altyapısı olarak tasarlanmıştır.
+Bu proje, ASP.NET Core Web API ve React frontend ile geliştirilen bir **Kütüphane Yönetim Sistemi**dir. Kitap listeleme, kiralama, iade takibi, geciken kiralamalar, kullanıcı rol yönetimi ve kayıt/giriş işlemlerini içerir.
 
-##  Öne Çıkan Teknik Özellikler
+## Öne Çıkan Özellikler
 
-* **Katmanlı Mimari (N-Tier Architecture):** Proje; Domain, Infrastructure ve API olmak üzere 3 ana katmana bölünerek sürdürülebilirlik sağlanmıştır.
-* **Global Soft Delete Mekanizması:** Veriler veritabanından fiziksel olarak silinmez; `BaseEntity` üzerinden yönetilen `IsDeleted` bayrağı ile mantıksal olarak korunur.
-* **Merkezi Loglama Middleware:** Gelen her HTTP isteği ve dönen cevaplar, özel bir Middleware katmanı  konsolda anlık olarak izlenir.
-* **EF Core Global Query Filters:** Silinmiş verilerin listeleme sorgularına dahil edilmemesi için veritabanı seviyesinde otomatik filtreleme uygulanmıştır.
-* **Code-First Migration:** Veritabanı şeması tamamen C# sınıfları üzerinden yönetilmektedir.
+* **Katmanlı Mimari:** Domain, Application, Infrastructure ve API katmanları ile sorumluluklar ayrılmıştır.
+* **React Frontend:** Kitap işlemleri, kiralama/iade takibi, gecikenler ekranı ve admin kullanıcı yönetimi arayüzden kullanılabilir.
+* **JWT Authentication:** Kullanıcı girişi token ile yapılır; roller token üzerinden okunur.
+* **Rol Bazlı Yetkilendirme:** Admin, Staff ve Member rolleri desteklenir.
+* **Admin Rol Yönetimi:** Admin kullanıcılar arayüzden kullanıcı rollerini değiştirebilir.
+* **Soft Delete:** Kayıtlar fiziksel olarak silinmez; `IsDeleted` alanı ile pasif hale getirilir.
+* **Audit Fields:** Tüm ortak entity kayıtlarında `CreatedAt` ve `UpdatedAt` alanları tutulur.
+* **Geciken Kiralama Araması:** Geciken kiralamalar kitap adı veya kullanıcı adına göre filtrelenebilir.
+* **Borrower Snapshot:** Kiralama sırasında kullanıcı adı/e-posta bilgisi rental kaydına yazılır; kullanıcı silinse bile geçmiş kiralama ekranında isim kaybolmaz.
+* **Swagger / OpenAPI:** Backend endpointleri Swagger üzerinden test edilebilir.
 
 ## Kullanılan Teknolojiler
 
-* **Platform:** .NET 8 / ASP.NET Core Web API
+* **Backend:** .NET 8 / ASP.NET Core Web API
+* **Frontend:** React, Axios, Bootstrap
 * **Veritabanı:** Microsoft SQL Server
-* **ORM:** Entity Framework Core (EF Core)
+* **ORM:** Entity Framework Core
+* **Kimlik Doğrulama:** JWT Bearer Authentication
 * **Dokümantasyon:** Swagger / OpenAPI
-* **Loglama:** ILogger & Custom Middleware
 
-##  Proje Dosya Yapısı
+## Proje Yapısı
 
 ```text
-LibraryManagement/
-├── LibraryManagement.Domain/ (Öz Katman)
-│   ├── Entities/
-│   │   ├── BaseEntity.cs (Ortak özellikler: Id, IsDeleted)
-│   │   ├── Book.cs
-│   │   ├── User.cs
-│   │   └── Rental.cs
-├── LbraryMangement.Infrastructure/ (Altyapı Katmanı)
-│   ├── Context/
-│   │   └── AppDbContext.cs (EF Core Bağlantısı & Global Filtreler)
-│   ├── Migrations/ (Veritabanı Geçmişi)
-│   └── Services/
-│       └── RentalService.cs (Kiralama İş Mantığı)
-├── LibraryManagement.Api/ (Sunum Katmanı)
-│   ├── Controllers/
-│   │   ├── BooksController.cs
-│   │   ├── UsersController.cs
-│   │   └── RentalsController.cs
-│   ├── Middlewares/
-│   │   └── RequestResponseLoggingMiddleware.cs (Anlık Trafik Loglama)
-│   └── Program.cs (Uygulama Konfigürasyonu)
+LibraryManagement.Api/
+|-- LibraryManagement.Domain/
+|   |-- BaseEntity.cs
+|   `-- Entities/
+|       |-- Book.cs
+|       |-- User.cs
+|       |-- Role.cs
+|       `-- Rental.cs
+|-- LibraryManagement.Application/
+|   |-- DTOs/
+|   |-- Interfaces/
+|   |-- Services/
+|   `-- Validators/
+|-- LibraryManagement.Infrastructure/
+|   |-- Context/
+|   |   `-- AppDbContext.cs
+|   `-- Migrations/
+|-- LibraryManagement.Api/
+|   |-- Controllers/
+|   |-- Middleware/
+|   `-- Program.cs
+`-- library-ui/
+    |-- src/
+    |   |-- components/
+    |   |-- App.js
+    |   `-- App.css
+    `-- package.json
+```
 
+## Backend Katmanları
 
-##  Mimari Yapı (Architectural Layers)
+1. **Domain Layer:** Entity sınıfları ve ortak `BaseEntity` yapısı burada bulunur.
+2. **Application Layer:** Servisler, DTO'lar, arayüzler ve validasyonlar burada yer alır.
+3. **Infrastructure Layer:** `AppDbContext`, EF Core ayarları, global query filter ve migration dosyaları burada bulunur.
+4. **API Layer:** Controller, middleware, authentication ve Swagger konfigürasyonları burada yönetilir.
 
-Proje, sorumlulukların ayrılması (Separation of Concerns) prensibine uygun olarak üç ana katmandan oluşmaktadır:
+## Temel API Uç Noktaları
 
-1.  **Domain Layer:** Projenin iş modellerini (`Entities`) barındırır. Tüm varlıklar `BaseEntity` sınıfından türetilerek standart bir yapıya oturtulmuştur.
-2.  **Infrastructure Layer:** Veritabanı erişimi (`DbContext`), veri modellerinin yapılandırılması (Fluent API) ve iş mantığı servislerini (`RentalService`) içerir.
-3.  **API Layer:** Dış dünyaya açılan uç noktaları (Controllers), hata yönetimi ve merkezi loglama (Middleware) katmanlarını yönetir.
+* **Auth:** Kayıt olma ve giriş işlemleri.
+* **Books:** Kitap listeleme, ekleme, güncelleme ve soft delete.
+* **Rentals:** Kitap kiralama, iade etme, kiralama geçmişi ve geciken kiralamalar.
+* **Users:** Kullanıcı listeleme ve rol güncelleme.
+* **Authors / Categories:** Yazar ve kategori işlemleri.
 
+## Frontend Ekranları
 
-## İlişkisel Veritabanı Tasarımı
-Entity Framework Core kullanılarak kurulan veritabanı şemasında aşağıdaki ilişkiler yönetilmektedir:
-* **User - Rental:** 1-N (Bir kullanıcı birden fazla kitap kiralayabilir).
-* **Book - Rental:** 1-N (Bir kitap farklı zamanlarda birçok kez kiralanabilir).
-* **Data Integrity:** Foreign Key kısıtlamaları ve Fluent API konfigürasyonları ile veri bütünlüğü korunmaktadır.
+* **Giriş / Kayıt:** Kullanıcı girişi ve yeni kullanıcı kaydı.
+* **Kitaplar:** Kitap listeleme, kiralama, admin için ekleme/düzenleme/silme.
+* **İade & Takip:** Kiralama geçmişi ve iade işlemleri.
+* **Gecikenler:** Geciken kiralamaları listeleme ve arama.
+* **Kullanıcılar:** Admin için kullanıcı rol yönetimi.
 
+## Çalıştırma
 
-API Uç Noktaları (Endpoints)
+Backend:
 
-* **Books:** Listeleme, Ekleme, Güncelleme, Soft-Delete.
-* **Users:** Üye yönetimi ve kayıt işlemleri.
-* **Rentals:** Kitap kiralama süreci ve iade işlemleri.
+```powershell
+cd C:\Users\sude\source\repos\LibraryManagement.Api\LibraryManagement.Api
+dotnet run
+```
+
+Backend varsayılan olarak şu adreste çalışır:
+
+```text
+https://localhost:64610
+```
+
+Swagger:
+
+```text
+https://localhost:64610/swagger
+```
+
+Frontend:
+
+```powershell
+cd C:\Users\sude\source\repos\LibraryManagement.Api\library-ui
+npm start
+```
+
+Frontend varsayılan olarak şu adreste açılır:
+
+```text
+http://localhost:3000
+```
+
+## Migration Komutları
+
+Migration ekleme:
+
+```powershell
+dotnet ef migrations add MigrationName --project LibraryManagement.Infrastructure --startup-project LibraryManagement.Api
+```
+
+Veritabanını güncelleme:
+
+```powershell
+dotnet ef database update --project LibraryManagement.Infrastructure --startup-project LibraryManagement.Api
+```
+
+Eğer `dotnet ef` PATH içinde çalışmazsa:
+
+```powershell
+C:\Users\sude\.dotnet\tools\dotnet-ef.exe migrations add MigrationName --project LibraryManagement.Infrastructure --startup-project LibraryManagement.Api
+C:\Users\sude\.dotnet\tools\dotnet-ef.exe database update --project LibraryManagement.Infrastructure --startup-project LibraryManagement.Api
+```
