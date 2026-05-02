@@ -43,6 +43,8 @@ public class RentalService : IRentalService
         {
             BookId = bookId,
             UserId = user.Id,
+            BorrowerName = user.FullName,
+            BorrowerEmail = user.Email,
             RentalDate = DateTime.Now,
             DueDate = DateTime.Now.AddDays(14), 
             Status = RentalStatus.Active,
@@ -96,10 +98,16 @@ public class RentalService : IRentalService
             {
                 r.Id,
                 r.RentalDate,
+                r.DueDate,
                 r.ReturnDate,
                 r.IsReturned,
                 r.Status,
-                UserName = r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                UserName = !string.IsNullOrWhiteSpace(r.BorrowerName)
+                    ? r.BorrowerName
+                    : r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                BorrowerEmail = !string.IsNullOrWhiteSpace(r.BorrowerEmail)
+                    ? r.BorrowerEmail
+                    : r.User != null ? r.User.Email : string.Empty,
                 BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
                 r.BookId,
                 r.UserId
@@ -148,7 +156,12 @@ public class RentalService : IRentalService
                 r.ReturnDate,
                 r.IsReturned,
                 r.Status,
-                UserName = r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                UserName = !string.IsNullOrWhiteSpace(r.BorrowerName)
+                    ? r.BorrowerName
+                    : r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                BorrowerEmail = !string.IsNullOrWhiteSpace(r.BorrowerEmail)
+                    ? r.BorrowerEmail
+                    : r.User != null ? r.User.Email : string.Empty,
                 BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
                 r.BookId,
                 r.UserId

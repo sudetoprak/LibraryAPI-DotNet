@@ -29,6 +29,9 @@ namespace LibraryManagement.Domain.Entities
         public DateTime ReturnDate { get; set; }
 
         public RentalStatus Status { get; set; } = RentalStatus.Active;
+        public string BorrowerName { get; set; } = string.Empty;
+        public string BorrowerEmail { get; set; } = string.Empty;
+
         public DateTime? DueDate { get; set; }
         public Decimal LateFee { get; set; }
 
