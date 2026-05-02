@@ -27,33 +27,105 @@ Bu proje, ASP.NET Core Web API ve React frontend ile geliştirilen bir **Kütüp
 ## Proje Yapısı
 
 ```text
-LibraryManagement.Api/
-|-- LibraryManagement.Domain/
-|   |-- BaseEntity.cs
-|   `-- Entities/
-|       |-- Book.cs
-|       |-- User.cs
-|       |-- Role.cs
-|       `-- Rental.cs
-|-- LibraryManagement.Application/
-|   |-- DTOs/
-|   |-- Interfaces/
-|   |-- Services/
-|   `-- Validators/
-|-- LibraryManagement.Infrastructure/
-|   |-- Context/
-|   |   `-- AppDbContext.cs
-|   `-- Migrations/
-|-- LibraryManagement.Api/
-|   |-- Controllers/
-|   |-- Middleware/
-|   `-- Program.cs
-`-- library-ui/
-    |-- src/
-    |   |-- components/
-    |   |-- App.js
-    |   `-- App.css
-    `-- package.json
+LibraryManagement/
+├── LibraryManagement.Domain/ (Öz Katman)
+│   ├── BaseEntity.cs (Ortak özellikler: Id, IsDeleted, CreatedAt, UpdatedAt)
+│   ├── LibraryManagement.Domain.csproj
+│   └── Entities/
+│       ├── Author.cs
+│       ├── Book.cs
+│       ├── BookAuthor.cs
+│       ├── Category.cs
+│       ├── User.cs
+│       ├── Role.cs
+│       └── Rental.cs
+├── LibraryManagement.Application/ (Uygulama Katmanı)
+│   ├── LibraryManagement.Application.csproj
+│   ├── DTOs/
+│   │   ├── Requests/
+│   │   │   ├── AuthorCreateDto.cs
+│   │   │   ├── BookCreateDto.cs
+│   │   │   ├── CategoryCreateDto.cs
+│   │   │   ├── RentalCreateDto.cs
+│   │   │   ├── UserCreateDto.cs
+│   │   │   └── UserRoleUpdateDto.cs
+│   │   └── Responses/
+│   │       ├── AuthorDto.cs
+│   │       ├── BookDto.cs
+│   │       ├── CategoryDto.cs
+│   │       ├── LoginDto.cs
+│   │       ├── PagedResult.cs
+│   │       ├── RegisterDto.cs
+│   │       ├── ServiceResult.cs
+│   │       └── UserDto.cs
+│   ├── Interfaces/
+│   │   ├── IAuthorService.cs
+│   │   ├── IAuthService.cs
+│   │   ├── IBookService.cs
+│   │   ├── ICategoryService.cs
+│   │   ├── IRentalService.cs
+│   │   └── IUserService.cs
+│   ├── Services/
+│   │   ├── AuthorService.cs
+│   │   ├── AuthService.cs
+│   │   ├── BookService.cs
+│   │   ├── CategoryService.cs
+│   │   ├── RentalService.cs (Kiralama İş Mantığı)
+│   │   ├── UserService.cs
+│   └── Validators/
+│       ├── AuthorCreateDtoValidator.cs
+│       ├── BookCreateDtoValidator.cs
+│       ├── CategoryCreateDtoValidator.cs
+│       ├── LoginDtoValidator.cs
+│       ├── RegisterDtoValidator.cs
+│       ├── RentalCreateDtoValidator.cs
+│       └── UserCreateDtoValidator.cs
+├── LibraryManagement.Infrastructure/ (Altyapı Katmanı)
+│   ├── LibraryManagement.Infrastructure.csproj
+│   ├── Context/
+│   │   └── AppDbContext.cs (EF Core Bağlantısı, Global Filtreler, Audit Fields)
+│   └── Migrations/ (Veritabanı Geçmişi)
+│       ├── InitialCreate
+│       ├── GlobalSoftDeleteFix
+│       ├── AddRentalReturnFields
+│       ├── SeedRoles
+│       ├── AddAuditFields
+│       └── AddRentalBorrowerSnapshot
+├── LibraryManagement.Api/ (Sunum Katmanı)
+│   ├── LibraryManagement.Api.csproj
+│   ├── appsettings.json
+│   ├── appsettings.Development.json
+│   ├── LibraryManagement.Api.http
+│   ├── Controllers/
+│   │   ├── AuthController.cs
+│   │   ├── AuthorsController.cs
+│   │   ├── BooksController.cs
+│   │   ├── CategoriesController.cs
+│   │   ├── UsersController.cs
+│   │   └── RentalsController.cs
+│   ├── Middleware/
+│   │   ├── ExceptionMiddleware.cs
+│   │   └── RequestResponseLoggingMiddleware.cs (Anlık Trafik Loglama)
+│   ├── Properties/
+│   │   └── launchSettings.json
+│   └── Program.cs (Uygulama Konfigürasyonu)
+└── library-ui/ (React Ön Yüz)
+    ├── package.json
+    ├── public/
+    │   ├── index.html
+    │   └── manifest.json
+    ├── src/
+    │   ├── components/
+    │   │   ├── BookForm.js
+    │   │   ├── BookList.js
+    │   │   ├── Login.js
+    │   │   ├── RentalList.js
+    │   │   └── UserAdminPanel.js
+    │   ├── App.js
+    │   ├── App.css
+    │   ├── index.js
+    │   └── index.css
+    └── package-lock.json
 ```
 
 ## Backend Katmanları
