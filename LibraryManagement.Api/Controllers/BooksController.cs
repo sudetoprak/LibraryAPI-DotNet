@@ -5,6 +5,9 @@ using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.DTOs.Requests;
 using LibraryManagement.Application.DTOs.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 namespace LibraryManagement.Api.Controllers;
 
 [Route("api/[controller]")]
@@ -15,10 +18,12 @@ namespace LibraryManagement.Api.Controllers;
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
+    private readonly IWebHostEnvironment _environment;
 
-    public BooksController(IBookService bookService)
+    public BooksController(IBookService bookService, IWebHostEnvironment environment)
     {
         _bookService = bookService;
+        _environment = environment;
     }
 
     /*
@@ -38,11 +43,36 @@ public class BooksController : ControllerBase
      */
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<BookDto>> PostBook(BookCreateDto bookDto)
+    public async Task<ActionResult<BookDto>> PostBook([FromForm] BookCreateDto bookDto)
     {
+        if (bookDto.Photo != null)
+        {
+            if (!bookDto.Photo.ContentType.StartsWith("image/"))
+                return BadRequest("Sadece resim dosyası yüklenebilir.");
+
+            if (bookDto.Photo.Length > 2 * 1024 * 1024)
+                return BadRequest("Dosya boyutu en fazla 2 MB olabilir.");
+
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "books");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(bookDto.Photo.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await bookDto.Photo.CopyToAsync(stream);
+            }
+
+            bookDto.PhotoUrl = $"/uploads/books/{fileName}";
+        }
+
         var newBook = await _bookService.AddBookAsync(bookDto);
         return Ok(newBook);
     }
+
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
@@ -53,6 +83,8 @@ public class BooksController : ControllerBase
         if (!success) return NotFound("Güncellenecek kitap bulunamadı.");
         return Ok("Kitap başarıyla güncellendi.");
     }
+
+    
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]

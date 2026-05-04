@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.DTOs.Requests
 {
-    //kullanıcı tarafından kitap eklemek istediğinde ,kullanıcıdan hangi bilgileri alacağımızı belirtiyoruz
     public class BookCreateDto
     {
         [Required(ErrorMessage = "Kitap başlığı boş bırakılamaz.")]
@@ -22,6 +18,17 @@ namespace LibraryManagement.Application.DTOs.Requests
 
         [Range(0, int.MaxValue, ErrorMessage = "Stok adedi 0'dan küçük olamaz.")]
         public int StockCount { get; set; }
+
+        public string PhotoUrl { get; set; } = string.Empty;
+
+        public IFormFile? Photo { get; set; }
+
+        public int? CategoryId { get; set; }
+
+        public int? PublishedYear { get; set; }
     }
 }
+
+
+
 

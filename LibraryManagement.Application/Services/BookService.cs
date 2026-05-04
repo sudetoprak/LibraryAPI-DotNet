@@ -34,6 +34,7 @@ public class BookService : IBookService
                 Id = b.Id,
                 Title = b.Title,
                 Author = b.Author,
+                PhotoUrl = b.PhotoUrl,
                 ISBN = b.ISBN,
                 StockCount = b.StockCount
             }).ToListAsync();
@@ -47,14 +48,14 @@ public class BookService : IBookService
             PageSize = pageSize
         };
     }
-    //kitap eklerken IsDeleted alanını false olarak ayarlıyoruz çünkü yeni eklenen kitap silinmiş kabul edilmez
     public async Task<BookDto> AddBookAsync(BookCreateDto dto)
     {
         var book = new Book
         {
             Title = dto.Title,
             Author = dto.Author,
-            ISBN = dto.ISBN, 
+            ISBN = dto.ISBN,
+            PhotoUrl = dto.PhotoUrl,
             StockCount = dto.StockCount,
             IsDeleted = false
         };
@@ -67,11 +68,11 @@ public class BookService : IBookService
             Id = book.Id,
             Title = book.Title,
             Author = book.Author,
+            PhotoUrl = book.PhotoUrl,
             ISBN = book.ISBN,
             StockCount = book.StockCount
         };
     }
-    //kitap güncellerken de silinmiş olan kitapları güncellemeye çalışmamak için IsDeleted kontrolü ekledik
     public async Task<bool> UpdateBookAsync(int id, BookCreateDto dto)
     {
         var book = await _context.Books.FindAsync(id);
@@ -82,6 +83,7 @@ public class BookService : IBookService
         book.Title = dto.Title;
         book.Author = dto.Author;
         book.ISBN = dto.ISBN;
+        book.PhotoUrl = dto.PhotoUrl;
         book.StockCount = dto.StockCount;
 
         _context.Books.Update(book);
@@ -89,8 +91,7 @@ public class BookService : IBookService
         return true;
     }
 
-    //kitap silerken de silinmiş olan kitapları tekrar silmeye çalışmamak için IsDeleted kontrolü ekledik. Ayrıca, gerçek bir silme işlemi yerine, kitabın IsDeleted alanını true yaparak "soft delete" uyguluyoruz. Bu sayede, silinen kitaplar veritabanında kalır ancak kullanıcıya gösterilmez .
-
+ 
     public async Task<bool> DeleteBookAsync(int id)
     {
         var book = await _context.Books.FindAsync(id);

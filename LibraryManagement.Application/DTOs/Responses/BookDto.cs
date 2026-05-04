@@ -16,5 +16,7 @@ namespace LibraryManagement.Application.DTOs.Responses
         public string Author { get; set; } = string.Empty;
         public int StockCount { get; set; }
         public string ISBN { get; set; } = string.Empty;
+
+        public string PhotoUrl { get; set; } = string.Empty;
     }
 }
