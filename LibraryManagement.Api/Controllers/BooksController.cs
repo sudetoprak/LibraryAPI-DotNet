@@ -53,7 +53,8 @@ public class BooksController : ControllerBase
             if (bookDto.Photo.Length > 2 * 1024 * 1024)
                 return BadRequest("Dosya boyutu en fazla 2 MB olabilir.");
 
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "books");
+            var webRootPath = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+            var uploadsFolder = Path.Combine(webRootPath, "uploads", "books");
 
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
@@ -77,10 +78,38 @@ public class BooksController : ControllerBase
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
 
-    public async Task<IActionResult> UpdateBook(int id, BookCreateDto dto)
+    public async Task<IActionResult> UpdateBook(int id, [FromForm] BookCreateDto dto)
     {
+        if (dto.Photo != null)
+        {
+            if (!dto.Photo.ContentType.StartsWith("image/"))
+                return BadRequest("Sadece resim dosyası yüklenebilir.");
+
+            if (dto.Photo.Length > 2 * 1024 * 1024)
+                return BadRequest("Dosya boyutu en fazla 2 MB olabilir.");
+
+            var webRootPath = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+            var uploadsFolder = Path.Combine(webRootPath, "uploads", "books");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(dto.Photo.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await dto.Photo.CopyToAsync(stream);
+            }
+
+            dto.PhotoUrl = $"/uploads/books/{fileName}";
+        }
+
         var success = await _bookService.UpdateBookAsync(id, dto);
-        if (!success) return NotFound("Güncellenecek kitap bulunamadı.");
+
+        if (!success)
+            return NotFound("Güncellenecek kitap bulunamadı.");
+
         return Ok("Kitap başarıyla güncellendi.");
     }
 

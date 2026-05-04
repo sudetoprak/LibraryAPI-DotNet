@@ -16,7 +16,6 @@ public class BookService : IBookService
     {
         _context = context;
     }
-    //kitapları getirirken silinmiş olanları getirmemek için IsDeleted kontrolü ekledik
     public async Task<PagedResult<BookDto>> GetAllBooksAsync(int page, int pageSize)
     {
         page = page < 1 ? 1 : page;
@@ -83,7 +82,11 @@ public class BookService : IBookService
         book.Title = dto.Title;
         book.Author = dto.Author;
         book.ISBN = dto.ISBN;
-        book.PhotoUrl = dto.PhotoUrl;
+        if (!string.IsNullOrWhiteSpace(dto.PhotoUrl))
+        {
+            book.PhotoUrl = dto.PhotoUrl;
+        }
+
         book.StockCount = dto.StockCount;
 
         _context.Books.Update(book);
