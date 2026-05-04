@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Domain.Entities
-{
+{ //kiralama sınıfı (varlıklar)
     public class Rental : BaseEntity
     {
 
@@ -16,23 +16,41 @@ namespace LibraryManagement.Domain.Entities
             Returned,
             Overdue
         }
-        // Rental sınıfı, kitap kiralama işlemlerini temsil eder. Bu sınıf, kullanıcıların hangi kitapları kiraladığını, kiralama tarihlerini, iade durumlarını ve geç iade durumlarında uygulanacak ücretleri takip etmek için kullanılır. Rental sınıfı, kullanıcılar ve kitaplar arasında bire çok ilişki içindedir, yani bir kullanıcı birden fazla kitabı kiralayabilir ve bir kitap da birden fazla kullanıcı tarafından kiralanabilir.
+        //kiralama nın hangi kitaba ait 
         public int BookId { get; set; }
+
+        //kitabın hangi kullanıcıya ait
         public int UserId { get; set; }
 
+
+        //User ve book ilişkisi
         public User? User { get; set; }
         public Book? Book { get; set; }
 
+
+        //Kitabın ne zmn kiralandıgı
         public DateTime RentalDate { get; set; }
+
+        //Kitabın iade durumu 
         public bool IsReturned { get; set; } = false;
 
+        //iade tarihi
         public DateTime ReturnDate { get; set; }
 
+
+        // Kiralamanın aktif, iade edildi veya gecikti durumunu tutar.
         public RentalStatus Status { get; set; } = RentalStatus.Active;
+
+        // kiralayn kişinin bilgileri 
         public string BorrowerName { get; set; } = string.Empty;
         public string BorrowerEmail { get; set; } = string.Empty;
 
+
+        //Kitabın teslim edilmesi gereken tarih
         public DateTime? DueDate { get; set; }
+
+
+        // gecikme olursa hesaplanan ucret tutarı 
         public Decimal LateFee { get; set; }
 
     }
