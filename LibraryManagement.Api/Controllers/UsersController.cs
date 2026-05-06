@@ -25,6 +25,14 @@ namespace LibraryManagement.Api.Controllers
             return Ok(users);
         }
 
+        [HttpGet("search")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<ActionResult<List<UserDto>>> SearchUsers(string search)
+        {
+            var users = await _userService.SearchUsersAsync(search);
+            return Ok(users);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserDto>> PostUser(UserCreateDto userDto)

@@ -50,6 +50,28 @@ public class UserService : IUserService
         };
     }
 
+    public async Task<List<UserDto>> SearchUsersAsync(string search)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+            return new List<UserDto>();
+
+        return await _context.Users
+            .Include(u => u.Role)
+            .Where(u => !u.IsDeleted &&
+                (u.FullName.Contains(search) || u.Email.Contains(search)))
+            .OrderBy(u => u.FullName)
+            .Take(5)
+            .Select(u => new UserDto
+            {
+                Id = u.Id,
+                FullName = u.FullName,
+                Email = u.Email,
+                RoleId = u.RoleId,
+                RoleName = u.Role != null ? u.Role.Name : "Rol yok"
+            })
+            .ToListAsync();
+    }
+
     public async Task<UserDto> AddUserAsync(UserCreateDto dto)
     {
         var user = new User

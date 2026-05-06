@@ -11,6 +11,7 @@ namespace LibraryManagement.Application.Interfaces
     public interface IUserService
     {
         Task<PagedResult<UserDto>> GetAllUsersAsync(int page, int pageSize);
+        Task<List<UserDto>> SearchUsersAsync(string search);
         Task<UserDto> AddUserAsync(UserCreateDto dto);
         Task<ServiceResult> UpdateUserRoleAsync(int userId, int roleId);
 

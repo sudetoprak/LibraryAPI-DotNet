@@ -17,7 +17,7 @@ public class RentalService : IRentalService
     {
         _context = context;
     }
-
+    //Kitap kiralama işlemini yapar; kitabın stok durumunu kontrol eder ve kiralama kaydı oluşturur
     public async Task<ServiceResult> RentBookAsync(string fullName, string email, int bookId)
     {
         var book = await _context.Books.FindAsync(bookId);
@@ -28,15 +28,12 @@ public class RentalService : IRentalService
 
         if (user == null)
         {
-            user = new User
-            {
-                FullName = fullName,
-                Email = email,
-                RoleId = 3,
-                PasswordHash = string.Empty
-            };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            return ServiceResult.Failure("Bu e-posta ile kayıtlı kullanıcı bulunamadı. Önce kayıt olunmalıdır.");
+        }
+
+        if (!user.FullName.Equals(fullName, StringComparison.OrdinalIgnoreCase))
+        {
+            return ServiceResult.Failure("Girilen ad soyad kayıtlı kullanıcı bilgisiyle eşleşmiyor.");
         }
 
         var rental = new Rental
@@ -57,7 +54,7 @@ public class RentalService : IRentalService
 
         return ServiceResult.Success($"{user.FullName} için kiralama başarılı! Kalan stok: {book.StockCount}");
     }
-
+    // Kiralanan kitabın iade işlemini yapar ve kiralama durumunu günceller.
     public async Task<ServiceResult> ReturnBookAsync(int rentalId)
     {
         var rental = await _context.Rentals
@@ -73,12 +70,17 @@ public class RentalService : IRentalService
         rental.IsReturned = true;
         rental.ReturnDate = DateTime.Now;
 
-        
+        if (rental.Book != null)
+        {
+            rental.Book.StockCount++;
+            _context.Books.Update(rental.Book);
+        }
 
         await _context.SaveChangesAsync();
         return ServiceResult.Success("Kitap başarıyla iade edildi ve stok güncellendi.");
     }
 
+    // Tüm kiralama kayıtlarını sayfalı şekilde getirir.
     public async Task<PagedResult<object>> GetAllRentalsAsync(int page, int pageSize)
     {
         page = page < 1 ? 1 : page;
@@ -124,7 +126,7 @@ public class RentalService : IRentalService
             PageSize = pageSize
         };
     }
-
+    // Teslim tarihi geçmiş ve iade edilmemiş kiralama kayıtlarını getirir.
     public async Task<PagedResult<object>> GetOverdueRentalsAsync(int page, int pageSize, string? search)
     {
         page = page < 1 ? 1 : page;
@@ -146,6 +148,53 @@ public class RentalService : IRentalService
 
         var rentals = await query
             .OrderBy(r => r.DueDate)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new
+            {
+                r.Id,
+                r.RentalDate,
+                r.DueDate,
+                r.ReturnDate,
+                r.IsReturned,
+                r.Status,
+                UserName = !string.IsNullOrWhiteSpace(r.BorrowerName)
+                    ? r.BorrowerName
+                    : r.User != null ? r.User.FullName : "Bilinmeyen Kullanıcı",
+                BorrowerEmail = !string.IsNullOrWhiteSpace(r.BorrowerEmail)
+                    ? r.BorrowerEmail
+                    : r.User != null ? r.User.Email : string.Empty,
+                BookTitle = r.Book != null ? r.Book.Title : "Bilinmeyen Kitap",
+                r.BookId,
+                r.UserId
+            })
+            .Cast<object>()
+            .ToListAsync();
+
+        return new PagedResult<object>
+        {
+            Items = rentals,
+            TotalCount = totalCount,
+            TotalSize = (int)Math.Ceiling(totalCount / (double)pageSize),
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+    // Giriş yapan kullanıcının kendi kiralama geçmişini getirir.
+    public async Task<PagedResult<object>> GetRentalsByUserAsync(int userId, string email, int page, int pageSize)
+    {
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize < 1 ? 10 : pageSize;
+
+        var query = _context.Rentals
+            .Include(r => r.User)
+            .Include(r => r.Book)
+            .Where(r => r.UserId == userId || r.BorrowerEmail == email);
+
+        var totalCount = await query.CountAsync();
+
+        var rentals = await query
+            .OrderByDescending(r => r.RentalDate)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(r => new

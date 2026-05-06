@@ -3,7 +3,6 @@ using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.DTOs.Requests;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using System.Security.Claims;
 namespace LibraryManagement.Api.Controllers
 {
     [ApiController]
@@ -18,7 +17,7 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
         {
             var rentals = await _rentalService.GetAllRentalsAsync(page ,pageSize);
@@ -26,10 +25,24 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpGet("overdue")]
-        [Authorize]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetOverdue(int page = 1, int pageSize = 10, string? search = null)
         {
             var rentals = await _rentalService.GetOverdueRentalsAsync(page, pageSize, search);
+            return Ok(rentals);
+        }
+
+        [HttpGet("my")]
+        [Authorize(Roles = "Member")]
+        public async Task<IActionResult> GetMyRentals(int page = 1, int pageSize = 10)
+        {
+            var userIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (!int.TryParse(userIdValue, out var userId) || string.IsNullOrWhiteSpace(email))
+                return Unauthorized();
+
+            var rentals = await _rentalService.GetRentalsByUserAsync(userId, email, page, pageSize);
             return Ok(rentals);
         }
 

@@ -16,12 +16,21 @@ public class BookService : IBookService
     {
         _context = context;
     }
-    public async Task<PagedResult<BookDto>> GetAllBooksAsync(int page, int pageSize)
+    public async Task<PagedResult<BookDto>> GetAllBooksAsync(int page, int pageSize, string? search = null)
     {
         page = page < 1 ? 1 : page;
         pageSize = pageSize < 1 ? 10 : pageSize;
 
         var query = _context.Books.Where(b => !b.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(b =>
+                b.Title.Contains(search) ||
+                b.Author.Contains(search) ||
+                b.ISBN.Contains(search));
+        }
+
         var totalCount = await query.CountAsync();
 
         var books = await query
