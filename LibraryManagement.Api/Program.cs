@@ -13,14 +13,18 @@ using LibraryManagement.Application.Validators;
 using LibraryManagement.Api.Middleware;
 
 
-
+// builder nesnesi olusur  Bu asamada, veritabanı bağlantısı, servisler, doğrulama kurallari, kimlik doğrulama ve Swagger gibi özellikler  bu nesne uzerinden eklenir.
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// veritabanı baglantisi eklenir. Bu asamada, SQL Server veritabanına bağlantı sağlanır. MigrationsAssembly , Infrastructure katmanında bulunur.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString,
         b => b.MigrationsAssembly("LibraryManagement.Infrastructure")));
 
+
+//cors ayarlarının erişimini apıden gelen isteğe sınırsız ierişim verir.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -28,13 +32,17 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
- 
+
+// Uygulama servisleri eklenir. Bu asamada, uygulamanın iş mantığını gerçekleştiren servisler eklenir. Her bir servis, ilgili arayüzü ile birlikte kaydedilir.
 builder.Services.AddScoped<IRentalService, RentalService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+
+//  FluentValidation kütüphanesi kullanılarak doğrulama kuralları eklenir.
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<BookCreateDtoValidator>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -55,6 +63,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
+// JWT kullanarak kullanıcıların kimlik doğrulaması sağlanır. TokenValidationParameters, token'ın geçerliliğini kontrol etmek için kullanılan parametreleri içerir. Bu parametreler arasında issuer (token'ı oluşturan), audience (token'ın hedef kitlesi), lifetime (token'ın geçerlilik süresi) ve signing key (token'ı imzalamak için kullanılan anahtar) gibi bilgiler bulunur.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -71,7 +80,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
+// Swagger ve diğer API özellikleri eklenir. Bu asamada, API'nin kontrolcülerini ekleyerek, Swagger ile API dokümantasyonu oluşturulur 
 builder.Services.AddControllers();
+
+// SwaggerGen, API'nin kontrolcülerini tarayarak, API'nin nasıl kullanılacağını gösteren bir kullanıcı arayüzü oluşturur.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -98,6 +111,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// app nesnesi uygulamanın çalıştırılmasını sağlar.Swagger'ın etkinleştirilmesi, statik dosyaların sunulması, HTTPS yönlendirmesi, CORS politikalarının uygulanması, özel middleware'lerin eklenmesi, kimlik doğrulama ve yetkilendirme işlemlerinin gerçekleştirilmesi ve API kontrolcülerinin haritalanması gibi işlemler yapılır.
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
