@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement.Application.Interfaces
 {
-    //interface, servis katmanında hangi işlemlerin yapılacağını belirtiyoruz. Bu sayede, servis katmanında yapılan işlemlerin sonucunu daha kolay yönetebilir ve kullanıcıya anlamlı geri bildirimler sağlayabiliriz.
+    // servis katmanında hangi işlemlerin yapılacağını belirtiyoruz. 
     
     public interface IBookService
     {
-        Task<PagedResult<BookDto>> GetAllBooksAsync(int page ,int pagesize);
+        Task<PagedResult<BookDto>> GetAllBooksAsync(int page, int pagesize, string? search = null);
         Task<BookDto> AddBookAsync(BookCreateDto dto);
         Task<bool> DeleteBookAsync(int id);
         Task<bool> UpdateBookAsync(int id, BookCreateDto dto);

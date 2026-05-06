@@ -32,9 +32,9 @@ public class BooksController : ControllerBase
      */
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<PagedResult<BookDto>>> GetBooks(int page = 1, int pageSize = 10)
+    public async Task<ActionResult<PagedResult<BookDto>>> GetBooks(int page = 1, int pageSize = 10, string? search = null)
     {
-        var books = await _bookService.GetAllBooksAsync(page, pageSize);
+        var books = await _bookService.GetAllBooksAsync(page, pageSize, search);
         return Ok(books);
     }
     /*

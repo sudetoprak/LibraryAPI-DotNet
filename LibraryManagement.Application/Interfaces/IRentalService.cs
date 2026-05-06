@@ -17,6 +17,5 @@ public interface IRentalService
     Task<PagedResult<object>> GetAllRentalsAsync(int page,int pageSize);
 
     Task<PagedResult<object>> GetOverdueRentalsAsync(int page, int pageSize,string ? search);
-
-
+    Task<PagedResult<object>> GetRentalsByUserAsync(int userId, string email, int page, int pageSize);
 }

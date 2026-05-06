@@ -21,6 +21,8 @@ namespace LibraryManagement.Infrastructure.Context
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<Category> Categories { get; set; }
 
+
+        //Ef-Core methodları 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -37,13 +39,15 @@ namespace LibraryManagement.Infrastructure.Context
             new Role { Id = 2, Name = "Staff", Description = "Ödünç verme ve iade işlemleri" },
             new Role { Id = 3, Name = "Member", Description = "Sadece kendi geçmişini görür" }
 );
-            // BookAuthor - Book ilişkisini optional yap
+            // BookAuthor - Author ilişkisi
             modelBuilder.Entity<BookAuthor>()
                 .HasOne(ba => ba.Author)
                 .WithMany(a => a.BookAuthors)
                 .HasForeignKey(ba => ba.AuthorId)
-                .IsRequired(false); // ← optional yap
+                .IsRequired(false);
 
+
+            // BookAuthor - Book ilişkisini
             modelBuilder.Entity<BookAuthor>()
                 .HasOne(ba => ba.Book)
                 .WithMany(b => b.BookAuthors)
