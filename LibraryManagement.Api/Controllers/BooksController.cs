@@ -17,32 +17,42 @@ namespace LibraryManagement.Api.Controllers;
 
 public class BooksController : ControllerBase
 {
+
+    //Kitaplarla ilgili listeleme ekleme ve guncelleme işlemini yönetir.
+    //Kitap işlemleri IBookService arayüzü kullanılarak servis katmanında gercekleşir. 
     private readonly IBookService _bookService;
+
+
+    //Kitap işlemleri sırasında dosya yükleme işlemi için IWebHostEnvironment kullanılır.
     private readonly IWebHostEnvironment _environment;
 
+
+    
     public BooksController(IBookService bookService, IWebHostEnvironment environment)
-    {
+    { 
+        // Constructor çalıştığında IBookService ve IWebHostEnvironment nesneleri dependency injection ile alınır.
+      // Böylece controller içinde hem kitap işlemleri hem de dosya yükleme işlemleri yapılabilir.
         _bookService = bookService;
         _environment = environment;
     }
 
-    /*
-     Yapan = Sude
-        Açıklama = Kitap işlemleri için API controller'ı. CRUD işlemlerini içerir.
-     */
+   
+
     [HttpGet]
     [Authorize]
+    //kitapları listelemek icin kullanılan get endpointi.
+    //Authorize sayesinde sadece giriş yapmıs kullanıcılar gorebilir.
     public async Task<ActionResult<PagedResult<BookDto>>> GetBooks(int page = 1, int pageSize = 10, string? search = null)
     {
+        //servis katmanına gidilerek  veritabanındakı kitaplar page ve page size ile alınır.
         var books = await _bookService.GetAllBooksAsync(page, pageSize, search);
         return Ok(books);
     }
-    /*
-     * yapan = Sude
-     * açıklama = Yeni bir kitap eklemek için POST endpoint'i. BookCreateDto alır ve eklenen kitabın bilgilerini döner.
-     */
+    
+
     [HttpPost]
     [Authorize(Roles = "Admin")]
+    //sadece admin rolu yapan kullanicilar bu işlemi yapabilir.
     public async Task<ActionResult<BookDto>> PostBook([FromForm] BookCreateDto bookDto)
     {
         if (bookDto.Photo != null)
