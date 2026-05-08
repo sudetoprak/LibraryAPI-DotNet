@@ -16,10 +16,13 @@ namespace LibraryManagement.Api.Controllers
             _rentalService = rentalService;
         }
 
+
+
         [HttpGet]
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
         {
+            //Admin ve Staff rollerine sahip kullanıcılar için tüm kiralamaları listelemek amacıyla kullanılan endpoint.
             var rentals = await _rentalService.GetAllRentalsAsync(page ,pageSize);
             return Ok(rentals);
         }

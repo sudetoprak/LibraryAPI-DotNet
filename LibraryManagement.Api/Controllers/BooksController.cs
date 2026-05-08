@@ -57,21 +57,29 @@ public class BooksController : ControllerBase
     {
         if (bookDto.Photo != null)
         {
+            //yuklenen dosyanın türünün resim olup olmadığı kontrol edilir. Eğer dosya türü resim değilse BadRequest ile hata mesajı döndürülür.
             if (!bookDto.Photo.ContentType.StartsWith("image/"))
                 return BadRequest("Sadece resim dosyası yüklenebilir.");
 
             if (bookDto.Photo.Length > 2 * 1024 * 1024)
                 return BadRequest("Dosya boyutu en fazla 2 MB olabilir.");
 
+
+            //
             var webRootPath = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
             var uploadsFolder = Path.Combine(webRootPath, "uploads", "books");
 
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
+            // Dosya isminin benzersiz olması için Guid kullanılır.
+            // Dosyanın uzantısı korunarak yeni isim oluşturulur
+
             var fileName = Guid.NewGuid() + Path.GetExtension(bookDto.Photo.FileName);
             var filePath = Path.Combine(uploadsFolder, fileName);
 
+
+            // Dosya, belirlenen konuma kaydedilir. CopyToAsync metodu kullanılarak dosya akışı oluşturulur ve dosya kaydedilir.
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await bookDto.Photo.CopyToAsync(stream);
@@ -85,8 +93,10 @@ public class BooksController : ControllerBase
     }
 
 
+
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
+    // "{id}" ifadesi sayesinde güncellenecek kitabın id bilgisi URL üzerinden alınır.
 
     public async Task<IActionResult> UpdateBook(int id, [FromForm] BookCreateDto dto)
     {

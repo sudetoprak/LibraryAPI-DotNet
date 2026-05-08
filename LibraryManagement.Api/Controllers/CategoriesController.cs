@@ -16,14 +16,19 @@ namespace LibraryManagement.Api.Controllers
         {
             _categoryService = categoryService;
         }
+
+
         [HttpGet]
+        //Sistemde bulunan kategorileri listelemek için kullanılır. Sayfalama desteği sağlar.
         public async Task<ActionResult<PagedResult<CategoryDto>>> GetAllCategories(int page = 1, int pageSize = 10)
         {
             var categories = await _categoryService.GetAllCategoriesAsync(page, pageSize);
             return Ok(categories);
         }
 
+
         [HttpPost]
+        //Yeni bir kategori eklemek için kullanılır. Kullanıcıdan gelen veriler CategoryCreateDto nesnesi ile alınır ve servis katmanına gönderilir
         public async Task<ActionResult<CategoryDto>> PostCategory(CategoryCreateDto dto)
         {
             var category = await _categoryService.AddCategoryAsync(dto);
@@ -31,6 +36,8 @@ namespace LibraryManagement.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        //Mevcut bir kategoriyi güncellemek için kullanılır. Kategori ID'si URL'den alınır
+        //güncellenmiş veriler CategoryCreateDto nesnesi ile alınır. Servis katmanına gönderilir ve işlem sonucuna göre uygun bir yanıt döndürülür.
         public async Task<IActionResult> UpdateCategory(int id, CategoryCreateDto dto)
         {
             var success = await _categoryService.UpdateCategoryAsync(id, dto);
