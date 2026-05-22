@@ -11,8 +11,9 @@ namespace LibraryManagement.Infrastructure.Context
 {
     public class AppDbContext : DbContext
     {
+        // AppDbContext sınıfı Entity Framework Core ile veritabanı işlemlerini yönetmek için kullanılır
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        // veritabanında ki tablolar
+        // DbSet:veritabanında ki olusturalacak Tablo isimleri 
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Rental> Rentals { get; set; }
@@ -25,7 +26,8 @@ namespace LibraryManagement.Infrastructure.Context
         //Ef-Core methodları 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            // Soft Delete işlemi için query filter uygulanır.
+            // IsDeleted değeri true olan veriler listeleme işlemlerinde görünmez.
             modelBuilder.Entity<Book>().HasQueryFilter(b => !b.IsDeleted);
             modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
             modelBuilder.Entity<Rental>().HasQueryFilter(r => !r.IsDeleted);
@@ -34,6 +36,10 @@ namespace LibraryManagement.Infrastructure.Context
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
 
             modelBuilder.Entity<BookAuthor>().HasQueryFilter(ba => !ba.IsDeleted);
+
+
+            // Varsayılan roller veritabanına otomatik olarak eklenir.
+
             modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "Admin", Description = "Her şeyi yapar" },
             new Role { Id = 2, Name = "Staff", Description = "Ödünç verme ve iade işlemleri" },
@@ -45,6 +51,10 @@ namespace LibraryManagement.Infrastructure.Context
                 .WithMany(a => a.BookAuthors)
                 .HasForeignKey(ba => ba.AuthorId)
                 .IsRequired(false);
+            //IsRequired ():ilişkinin zorunlu olup olmadıgıdır
+            //true ise :zorunludur 
+            //false:boştur
+
 
 
             // BookAuthor - Book ilişkisini
@@ -91,6 +101,10 @@ namespace LibraryManagement.Infrastructure.Context
             base.OnModelCreating(modelBuilder);
         }
 
+
+
+        // Veritabanına kayıt islemi yapılmadan önce çalışır.
+        // Burada audit alanları otomatik olarak doldurulur.
         public override int SaveChanges()
         {
             ApplyAuditFields();

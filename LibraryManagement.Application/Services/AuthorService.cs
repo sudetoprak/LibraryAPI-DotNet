@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,9 @@ namespace LibraryManagement.Application.Services
 { 
     public class AuthorService : IAuthorService
     {
+        // Veritabanı işlemlerini yapabilmek için AppDbContext kullanılır.
+        // Yazar tablosuna erişim bu context üzerinden sağlanır.
+
         private readonly AppDbContext _context;
 
         public AuthorService(AppDbContext context)
@@ -22,11 +26,17 @@ namespace LibraryManagement.Application.Services
             _context = context;
         }
         
+
+
         public async Task<PagedResult<AuthorDto>> GetAllAuthorsAsync(int page, int pageSize)
         {
+            // Bu metot yazarları sayfalı şekilde listelemek için kullanılır.
+            // page sayfa numarasını, pageSize ise bir sayfada kaç yazar gösterileceğini belirtir.
             page = page < 1 ? 1 : page;
             pageSize = pageSize < 1 ? 10 : pageSize;
 
+
+            // silinmeyen yazarları filtrelemek için sorgu oluşturulur. 
             var query = _context.Authors.Where(a => !a.IsDeleted);
             var totalCount = await query.CountAsync();
 

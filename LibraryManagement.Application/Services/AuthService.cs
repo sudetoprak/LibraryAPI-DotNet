@@ -21,9 +21,14 @@ using LibraryManagement.Application.DTOs.Responses;
 
 namespace LibraryManagement.Application.Services
 {
-    // kullanıcının e-posta adresinin benzersiz olduğunu kontrol eder ve şifreyi güvenli bir şekilde hash'ler. Giriş sırasında, kullanıcının e-posta adresi ve şifresini doğrular ve başarılı bir giriş durumunda JWT token'ı oluşturur. Bu token, kullanıcının kimliğini doğrulamak ve yetkilendirmek için kullanılır.
+    // AuthService sınıfı kullanıcı kayıt ve giriş işlemlerinin yapıldığı servis sınıfıdır.
+    // Kullanıcı kayıt olurken e-posta kontrolü yapılır, şifre güvenli şekilde hashlenir.
+    // Kullanıcı giriş yaptığında ise e-posta ve şifre doğrulanır, bilgiler doğruysa JWT token oluşturulur.
     public class AuthService : IAuthService
     {
+
+        // appsettings.json içindeki JWT ayarlarına ulaşmak için IConfiguration kullanılır.
+        // Token oluştururken key, issuer ve audience bilgileri buradan alınır.
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
 
@@ -33,7 +38,9 @@ namespace LibraryManagement.Application.Services
             _context = context;
             _configuration = configuration;
         }
-       
+
+
+        // Kullanıcının sisteme kayıt olması için kullanılan metottur.
         public async Task<ServiceResult> RegisterAsync(string fullName, string email, string password)
         {
             var exists = await _context.Users.AnyAsync(u => u.Email == email);
@@ -50,7 +57,7 @@ namespace LibraryManagement.Application.Services
             await _context.SaveChangesAsync();
             return ServiceResult.Success("Kayıt başarılı!");
         }
-
+        // Kullanıcının sisteme giriş yapması için kullanılan metottur.
         public async Task<string?> LoginAsync(LoginDto dto)
         {
             var user = await _context.Users
@@ -66,10 +73,18 @@ namespace LibraryManagement.Application.Services
         }
 
 
+
+
+        // Kullanıcı bilgilerine göre JWT token oluşturmak için kullanılan metottur.
         private string GenerateToken(User user)
         {
+            // Token oluşturulurken kullanılan gizli anahtar, issuer ve audience bilgileri appsettings.json dosyasından alınır.
+            //tokenen sahte olup olmadığını anlamaya yarar
+
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+
+
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

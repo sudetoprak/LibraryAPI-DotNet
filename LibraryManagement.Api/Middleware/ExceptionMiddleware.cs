@@ -2,8 +2,11 @@ using System.Text.Json;
 
 namespace LibraryManagement.Api.Middleware
 {
+    // Bu middleware uygulama içerisinde oluşabilecek beklenmeyen hataları yakalamak için kullanılır.
+    //Hata olusmasında uygulamanın tamamen çökmesini engelleyerek kullanıcıya duzenli bir hata döndürür.
     public class ExceptionMiddleware
     {
+
         private readonly RequestDelegate _next;
         private readonly IWebHostEnvironment _environment;
 
